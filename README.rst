@@ -10,8 +10,8 @@ Prerequisites
 
 * To run the model:
     * Python >= 2.7, http://www.python.org/
-    * NumPy >= 1.7.2, http://www.numpy.org/
-    * Pandas >= 0.14.0, http://pandas.pydata.org/
+    * NumPy >= 1.11, http://www.numpy.org/
+    * Pandas >= 0.18, http://pandas.pydata.org/
 * To build the documentation: Sphinx >= 1.1.3, http://sphinx-doc.org/
 * To run the tests: Nose >= 1.3.0, http://nose.readthedocs.org/
 * To get code coverage testing: Coverage >= 3.6b3, http://nedbatchelder.com/code/coverage/
