@@ -36,7 +36,7 @@ setup(
     version=elongwheat.__version__,
     packages = find_packages(),
 
-    install_requires = ['numpy>=1.7.2', 'pandas>=0.14.0'],
+    install_requires = ['numpy>=1.11.0', 'pandas>=0.18.0'],
     include_package_data = True,
 
     # metadata for upload to PyPI
