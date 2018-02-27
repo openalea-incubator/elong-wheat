@@ -1,0 +1,11 @@
+#####################
+#     TODO LIST     #
+#####################
+
+- "temps thermique equivalent".
+- RERmax fonction du n° de feuille?
+- dechargement phloeme dans hz: diffusion et pas MM
+- fonction dépendance RERmax à CN pas implémentée avec MM bi-substrat
+- green area vs area
+- "calculate_deltaL_postE" param K convertit en sec de façon grossière: a affiner
+- unité param K
