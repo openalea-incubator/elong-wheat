@@ -111,7 +111,7 @@ class Simulation(object):
         self.inputs.clear()
         self.inputs.update(inputs)
 
-    def run(self, Tair, Tsoil):
+    def run(self, Tair, Tsoil, opt_croiss_fix):
         """
         Run the simulation.
 
@@ -319,7 +319,7 @@ class Simulation(object):
                     if not prev_leaf_emerged:  #: Before the emergence of the previous leaf. Exponential-like elongation.
                         # delta leaf length
                         delta_leaf_L = model.calculate_deltaL_preE(hiddenzone_inputs['sucrose'], hiddenzone_inputs['leaf_L'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'],
-                                                                   curr_SAM_outputs['delta_teq'], phytomer_id)
+                                                                   curr_SAM_outputs['delta_teq'], phytomer_id, opt_croiss_fix)
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
 
                     else:  #: After the emergence of the previous leaf.
@@ -359,9 +359,10 @@ class Simulation(object):
                                     next_hiddenzone_outputs['sheath_Lmax'] = model.calculate_sheath_Lmax(next_hiddenzone_outputs['leaf_Lmax'], next_hiddenzone_outputs['lamina_Lmax'])  #: Final sheath length
                                     next_hiddenzone_outputs['leaf_Wmax'] = model.calculate_leaf_Wmax(next_hiddenzone_outputs['lamina_Lmax'], next_hiddenzone_inputs['fructan'],
                                                                                                      next_hiddenzone_inputs['mstruct'], next_hiddenzone_id[2])                              #: Maximal leaf width
-                                    next_hiddenzone_outputs['SSLW'] = model.calculate_SSLW(next_hiddenzone_inputs['fructan'], next_hiddenzone_inputs['mstruct'],next_hiddenzone_id[2])     #: Structural Specific Lamina
+                                    next_hiddenzone_outputs['SSLW'] = model.calculate_SSLW(next_hiddenzone_inputs['fructan'], next_hiddenzone_inputs['mstruct'],next_hiddenzone_id[2],opt_croiss_fix)     #: Structural Specific Lamina
                                     # Weight
-                                    next_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(next_hiddenzone_outputs['SSLW'],next_hiddenzone_id[2])                                          #: Structural Lineic Sheath Weight
+                                    next_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(next_hiddenzone_outputs['SSLW'],next_hiddenzone_id[2], opt_croiss_fix)                                          #:
+                                    # Structural Lineic Sheath Weight
                                     next_hiddenzone_outputs['leaf_pseudo_age'] = 0                                                                                   #: Pseudo age of the leaf since beginning of automate growth (s)
                                     self.outputs['hiddenzone'][next_hiddenzone_id] = next_hiddenzone_outputs
                                 else:
@@ -397,7 +398,9 @@ class Simulation(object):
                                     next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
                                     if curr_SAM_outputs['GA']:
                                         next_hiddenzone_outputs['internode_Lmax'] = model.calculate_internode_Lmax(next_hiddenzone_outputs['internode_L'])  #: Final internode length
-                                    next_hiddenzone_outputs['LSIW'] = model.calculate_LSIW(next_hiddenzone_outputs['LSSW'], phytomer_id)                                 #: Structural Specific Internode
+                                    next_hiddenzone_outputs['LSIW'] = model.calculate_LSIW(next_hiddenzone_outputs['LSSW'], next_hiddenzone_id[2], opt_croiss_fix)                                 #:
+                                    # Structural Specific
+                                    # Internode
                                     # Weight
                                     next_hiddenzone_outputs['internode_pseudo_age'] = 0                                            #: Pseudo age of the internode since beginning of automate growth (s)
                                     self.outputs['hiddenzone'][next_hiddenzone_id] = next_hiddenzone_outputs
@@ -467,7 +470,7 @@ class Simulation(object):
                     if not prev_leaf_ligulated:
                         delta_internode_L = model.calculate_delta_internode_L_preL(phytomer_id, curr_hiddenzone_outputs['sucrose'], curr_hiddenzone_outputs['internode_L'],
                                                                                    curr_hiddenzone_outputs['amino_acids'], curr_hiddenzone_outputs['mstruct'],
-                                                                                   curr_SAM_outputs['delta_teq'])
+                                                                                   curr_SAM_outputs['delta_teq'],opt_croiss_fix)
                         internode_L = curr_hiddenzone_outputs['internode_L'] + delta_internode_L  # TODO: Ckeck internode_L is not too large (in the case of long delta_t)
 
                         curr_hiddenzone_outputs['internode_L'] = internode_L

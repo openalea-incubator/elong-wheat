@@ -205,7 +205,7 @@ def calculate_leaf_pseudostem_length(ligule_heights, bottom_hiddenzone_height, p
     return max( leaf_pseudostem_length, 0)
 
 
-def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf_rank):
+def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf_rank, opt_croiss_fix):
     """ Delta of leaf length over delta_t as a function of sucrose and amino acids, from initiation to the emergence of the previous leaf.
 
     :Parameters:
@@ -219,17 +219,16 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
     :Returns Type:
         :class:`float`
     """
-    RER_max = parameters.RERmax_dict[leaf_rank]
+
     if sucrose > 0 and amino_acids > 0:
-        delta_leaf_L = leaf_L * RER_max * delta_teq
+        if opt_croiss_fix:
+            RER_max = parameters.RERmax_dict[leaf_rank]
+            delta_leaf_L = leaf_L * RER_max * delta_teq
+        else:
+            RER_max = parameters.RERmax
+            delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
     else:
         delta_leaf_L = 0
-    # RER_max = parameters.RERmax
-    # if sucrose > 0 and amino_acids > 0:
-    #     delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * \
-    #                    (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
-    # else:
-    #     delta_leaf_L = 0
 
     return delta_leaf_L
 
@@ -386,7 +385,7 @@ def calculate_leaf_Wmax(lamina_Lmax, fructan, mstruct,leaf_rank):
     return parameters.leaf_Wmax_dict[leaf_rank]
 
 
-def calculate_SSLW(fructan, mstruct, leaf_rank):
+def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
     """ Structural Specific Lamina Weight.
 
     :Parameters:
@@ -398,11 +397,14 @@ def calculate_SSLW(fructan, mstruct, leaf_rank):
         :class:`float`
     """
     conc_fructan = fructan / mstruct
+    if opt_croiss_fix:
+        SSLW = parameters.leaf_SSLW_dict[leaf_rank]
+    else :
+        SSLW = parameters.min_SSLW + (parameters.max_SSLW - parameters.min_SSLW) * conc_fructan / (conc_fructan + parameters.Ksslw)
+    return SSLW
 
-    return parameters.leaf_SSLW_dict[leaf_rank] #parameters.min_SSLW + (parameters.max_SSLW - parameters.min_SSLW) * conc_fructan / (conc_fructan + parameters.Ksslw)
 
-
-def calculate_LSSW(SSLW,leaf_rank):
+def calculate_LSSW(SSLW,leaf_rank, opt_croiss_fix):
     """ Lineic Structural Sheath Weight.
 
     :Parameters:
@@ -412,7 +414,11 @@ def calculate_LSSW(SSLW,leaf_rank):
     :Returns Type:
         :class:`float`
     """
-    return parameters.leaf_LSSW_dict[leaf_rank] #SSLW * parameters.ratio_LSSW_SSLW
+    if opt_croiss_fix:
+        LSSW = parameters.leaf_LSSW_dict[leaf_rank]
+    else :
+        LSSW = SSLW * parameters.ratio_LSSW_SSLW
+    return LSSW
 
 
 def calculate_emerged_sheath_L(leaf_L, leaf_pseudostem_length, lamina_L):
@@ -486,7 +492,7 @@ def calculate_internode_Lmax(internode_L_lig):
     return internode_Lmax
 
 
-def calculate_LSIW(LSSW, leaf_rank):
+def calculate_LSIW(LSSW, leaf_rank, opt_croiss_fix):
     """ Lineic Structural Internode Weight.
 
     :Parameters:
@@ -496,7 +502,11 @@ def calculate_LSIW(LSSW, leaf_rank):
     :Returns Type:
         :class:`float`
     """
-    return parameters.internode_LSIW_dict[leaf_rank]#LSSW * parameters.ratio_LSIW_LSSW # TODO : changer mode de calcul car rapport non stable suivant numéro de phytomère
+    if opt_croiss_fix:
+        LSIW =parameters.internode_LSIW_dict[leaf_rank]
+    else :
+        LSIW = LSSW * parameters.ratio_LSIW_LSSW # TODO : changer mode de calcul car rapport non stable suivant numéro de phytomère
+    return LSIW
 
 
 def calculate_init_internode_elongation(hiddenzone_age):
@@ -520,7 +530,7 @@ def calculate_init_internode_elongation(hiddenzone_age):
     return is_growing, internode_L
 
 
-def calculate_delta_internode_L_preL(internode_rank, sucrose, internode_L, amino_acids, mstruct, delta_teq):
+def calculate_delta_internode_L_preL(internode_rank, sucrose, internode_L, amino_acids, mstruct, delta_teq,opt_croiss_fix):
     """ delta of internode length over delta_t as a function of sucrose and amino acids, from initiation to the ligulation of the previous leaf.
 
     :Parameters:
@@ -535,15 +545,18 @@ def calculate_delta_internode_L_preL(internode_rank, sucrose, internode_L, amino
     :Returns Type:
         :class:`float`
     """
-    # RER_max = parameters.RERmax
-    RER_max = parameters.RERmax_dict_IN[internode_rank]
-    delta_internode_L = internode_L * RER_max * delta_teq
-    # if sucrose > 0 and amino_acids > 0:
-    #     delta_internode_L = internode_L * RER_max * delta_teq * ((sucrose / mstruct) /
-    #                                                              (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) /
-    #                                                                                                        (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
-    # else:
-    #     delta_internode_L = 0
+
+    if sucrose > 0 and amino_acids > 0:
+        if opt_croiss_fix:
+            RER_max = parameters.RERmax_dict_IN[internode_rank]
+            delta_internode_L = internode_L * RER_max * delta_teq
+        else :
+            RER_max = parameters.RERmax
+            delta_internode_L = internode_L * RER_max * delta_teq * ((sucrose / mstruct) /
+                                                                 (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) /
+                                                                                                           (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
+    else:
+        delta_internode_L = 0
 
     return delta_internode_L
 
