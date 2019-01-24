@@ -326,8 +326,9 @@ class Simulation(object):
                                                                           curr_SAM_outputs['delta_teq'])
                         curr_hiddenzone_outputs['leaf_pseudo_age'] = leaf_pseudo_age
                         curr_hiddenzone_outputs['delta_leaf_pseudo_age'] = leaf_pseudo_age - hiddenzone_inputs['leaf_pseudo_age']
-                        leaf_L = model.calculate_L_postE(leaf_pseudo_age, curr_hiddenzone_outputs['leaf_Lmax'])
-                        delta_leaf_L = leaf_L - hiddenzone_inputs['leaf_L']
+                        leaf_L = hiddenzone_inputs['leaf_L']
+                        #leaf_L = model.calculate_L_postE(leaf_pseudo_age, curr_hiddenzone_outputs['leaf_Lmax'])  # calculated by turgor growth model now
+                        #delta_leaf_L = leaf_L - hiddenzone_inputs['leaf_L']
 
                         lamina_id = hiddenzone_id + tuple(['blade', 'LeafElement1'])
                         #: Lamina has not emerged
@@ -440,7 +441,7 @@ class Simulation(object):
 
                 # Update of leaf outputs
                 curr_hiddenzone_outputs['leaf_L'] = leaf_L
-                curr_hiddenzone_outputs['delta_leaf_L'] = delta_leaf_L
+                #curr_hiddenzone_outputs['delta_leaf_L'] = delta_leaf_L
 
                 #: Internode elongation
                 #: Initialisation of internode elongation

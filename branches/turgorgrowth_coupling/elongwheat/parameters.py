@@ -129,7 +129,7 @@ class HiddenZoneInit(object):
         self.internode_Lmax = None               #: m, no calculation before ligulation Ln
         self.LSIW = None                         #: g m-1, no calculation before ligulation Ln
         self.internode_is_visible = False
-        self.leaf_pseudo_age = 0
+        self.leaf_pseudo_age = None
         self.internode_pseudo_age = 0
         self.delta_leaf_pseudo_age = 0
         self.delta_internode_pseudo_age = 0
