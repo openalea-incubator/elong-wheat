@@ -76,6 +76,10 @@ ratio_LSSW_SSLW = 0.003  #: ratio lineic structural mass sheath / specific struc
 leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 17,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004)
 leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.52,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
 
+# Share of division zone in the growing leaf.  The model was fitted on litterature data on wheat(Fournier 2005, Beemer and Masle 1996, Schuppler 1998)
+ratio_DZ_l_init = 0.065#0.25     #: normalized length of the whole leaf
+ratio_DZ_l_mid = 0.075#0.4       #: normalized length of the whole leaf
+ratio_DZ_l_end = 0.9#0.9       #: normalized length of the whole leaf
 
 # -------------------------------------------------------------------------------------------------------------------
 # --- Internodes
@@ -135,18 +139,19 @@ class HiddenZoneInit(object):
         self.delta_internode_pseudo_age = 0
         self.hiddenzone_age = 0
         self.is_over = False
+        self.ratio_DZ = 1.0
 
         # Default values used for RER calculation in elong wheat
         self.sucrose = 5E-6                      #: µmol C
         self.amino_acids = 4E-6                  #: µmol N
         self.fructan = 0                         #: µmol C
-        self.leaf_enclosed_mstruct = 2.65E-08    #: g TODO: viens d'ou?
+        self.leaf_enclosed_mstruct = 1.26E-07    #: g
         self.internode_enclosed_mstruct = 0               #: g
         self.mstruct = self.leaf_enclosed_mstruct + self.internode_enclosed_mstruct  #: g
         self.leaf_enclosed_Nstruct = self.leaf_enclosed_mstruct * 0.005  #: g, parameter value in growth wheat #: g
         self.internode_enclosed_Nstruct = self.internode_enclosed_mstruct * 0.0322  #: g, parameter value in growth wheat
         self.Nstruct = self.leaf_enclosed_Nstruct + self.internode_enclosed_Nstruct  #: g
-        self.proteins = 0                        #: µmol N
+        self.proteins = 2.6E-03                   #: µmol N - about 9% N
         self.conc_cytokinins = 150                #: AU / g mstruct
 
 
@@ -157,4 +162,14 @@ class ElementInit(object):
     def __init__(self):
         self.is_growing = True
         self.length = 0               #: m
+        self.senesced_length = 0      #: m
         self.age = 0                  #: Thermal Time
+        self.max_proteins = 0         #: µmol N
+        self.Nresidual = 0            #: g
+        self.sucrose = 0              #: µmol C
+        self.amino_acids = 0          #: µmol N
+        self.fructan = 0              #: µmol C
+        self.proteins = 0             #: µmol N
+        self.mstruct = 0              #: g
+        self.Nstruct = 0              #: g
+        self.cytokinins = 0           #: g

@@ -3,7 +3,7 @@
 from __future__ import division  # use "//" to do integer division
 import pandas as pd
 import parameters
-from math import exp
+from math import exp, log10
 
 """
     elongwheat.model
@@ -161,7 +161,6 @@ def calculate_SAM_GA(status, teq_since_primordium):
 # --- Leaves
 # -------------------------------------------------------------------------------------------------------------------
 
-
 def calculate_ligule_height(sheath_internode_length, all_element_inputs, SAM_id, all_ligule_height_df):
     """ Calculate ligule heights below each phytomer of an axis from lengths of internodes and sheaths.
         The result is formated into a dataframe which is concatenated with a shared dataframe storing all ligule heights
@@ -226,6 +225,12 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             delta_leaf_L = leaf_L * RER_max * delta_teq
         else:
             RER_max = parameters.RERmax
+            # Enzymatic rate for bi-substrats with random fixation
+            conc_amino_acids = (amino_acids / mstruct)
+            conc_sucrose = (sucrose / mstruct)
+            # V = conc_sucrose * conc_amino_acids/(conc_sucrose*conc_amino_acids + Ka*conc_amino_acids + Kb*conc_sucrose + Ka_bis*Kb)
+            # NB : we can define Ka_bis = Ka if sucrose and amino_acids are independant of the enzymatic activity
+
             delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
     else:
         delta_leaf_L = 0
@@ -273,6 +278,32 @@ def calculate_L_postE(leaf_pseudo_age, leaf_Lmax):
         leaf_L = leaf_Lmax
 
     return leaf_L
+
+def calculate_ratio_DZ_postE(leaf_L, leaf_Lmax, pseudostem_L):
+    """ Ratio of the hiddenzone length which is made of division zone.
+        The model was fitted on litterature data on wheat.
+    :Parameters:
+        - `leaf_L` (:class:`float`) - Current leaf length (m)
+        - `leaf_Lmax` (:class:`float`) - Final leaf length (m)
+        - `pseudostem_L` (:class:`float`) - Length of the pseudostem (m)
+    :Returns:
+        ratio_DZ (dimensionless)
+    :Returns Type:
+        :class:`float`
+    """
+    lb = log10(parameters.ratio_DZ_l_init)
+    lm = log10(parameters.ratio_DZ_l_mid)
+    le = log10(parameters.ratio_DZ_l_end)
+
+    l_x = leaf_L/leaf_Lmax
+    x = log10(l_x)
+
+    if l_x >= parameters.ratio_DZ_l_end:
+        return  0
+    elif l_x <= parameters.ratio_DZ_l_init:
+        return 1
+    else:
+        return  min( ( 1 - (1 + (le - x)/(le - lm)) * ( ((x - lb)/(le - lb)) ** ((le - lb)/(le - lm)) ) ) * leaf_L / min( leaf_L, pseudostem_L) , 1.)
 
 
 def calculate_leaf_emergence(leaf_L, leaf_pseudostem_length):
