@@ -44,7 +44,7 @@ SAM_INPUTS = ['SAM_temperature', 'delta_teq', 'teq_since_primordium', 'status', 
 HIDDENZONE_OUTPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_age', 'delta_leaf_pseudo_age', 'internode_pseudo_age', 'delta_internode_pseudo_age', 'leaf_pseudostem_length',
                       'hiddenzone_age', 'delta_leaf_pseudostem_length', 'internode_distance_to_emerge', 'delta_internode_distance_to_emerge', 'leaf_L', 'delta_leaf_L', 'internode_L',
                       'delta_internode_L', 'leaf_Lmax', 'lamina_Lmax', 'sheath_Lmax', 'leaf_Wmax', 'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'LSIW', 'internode_is_visible', 'sucrose',
-                      'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct']
+                      'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'temperature']
 ELEMENT_OUTPUTS = ['length', 'is_growing', 'diameter', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'mstruct', 'Nstruct', 'age']
 SAM_OUTPUTS = ['SAM_temperature', 'delta_teq', 'delta_teq_roots', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'height', 'cohort', 'sum_TT']
 
@@ -207,8 +207,8 @@ class Simulation(object):
 
             SAM_id = hiddenzone_id[:2]
             phytomer_id = hiddenzone_id[2]
-
             axe_label = hiddenzone_id[1]
+
             #: Tillers (we copy corresponding elements of MS)
             if axe_label != 'MS':
                 tiller_to_MS_phytomer_id = tuple([SAM_id[0], 'MS', all_SAM_outputs[SAM_id]['cohort'] + phytomer_id - 1])
@@ -265,6 +265,7 @@ class Simulation(object):
                 curr_SAM_outputs = all_SAM_outputs[SAM_id]
 
                 curr_hiddenzone_outputs['hiddenzone_age'] += curr_SAM_outputs['delta_teq']
+                curr_hiddenzone_outputs['temperature'] = curr_SAM_outputs['SAM_temperature']
 
                 hidden_sheath_id = hiddenzone_id + tuple(['sheath', 'HiddenElement'])
                 visible_sheath_id = hiddenzone_id + tuple(['sheath', 'StemElement'])
