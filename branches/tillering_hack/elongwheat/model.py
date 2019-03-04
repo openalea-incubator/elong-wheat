@@ -61,10 +61,6 @@ def modified_Arrhenius_equation(temperature):
         :class:`float`
     """
 
-
-
-
-
     Arrhenius_equation = lambda T: T * exp(-parameters.Temp_Ea_R / T) / (1 + exp(parameters.Temp_DS_R - parameters.Temp_DH_R / T))
     temperature_K = temperature + 273.15
 
@@ -224,14 +220,18 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             RER_max = parameters.RERmax_dict[leaf_rank]
             delta_leaf_L = leaf_L * RER_max * delta_teq
         else:
-            RER_max = parameters.RERmax
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.4 # *2 too low, *2.5 slightly too much
             # Enzymatic rate for bi-substrats with random fixation
+            # rate = conc_sucrose * conc_amino_acids/(conc_sucrose*conc_amino_acids + Ka*conc_amino_acids + Kb*conc_sucrose + Ka_bis*Kb)
+            # NB : we can define Ka_bis = Ka if sucrose and amino_acids are independant of the enzymatic activity
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
-            # V = conc_sucrose * conc_amino_acids/(conc_sucrose*conc_amino_acids + Ka*conc_amino_acids + Kb*conc_sucrose + Ka_bis*Kb)
-            # NB : we can define Ka_bis = Ka if sucrose and amino_acids are independant of the enzymatic activity
 
-            delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
+            Ka = 20
+            Kb = 70
+            Ka_bis = Kb
+            delta_leaf_L = leaf_L * RER_max * delta_teq * conc_sucrose * conc_amino_acids/(conc_sucrose*conc_amino_acids + Ka*conc_amino_acids + Kb*conc_sucrose + Ka_bis*Kb)
+            # delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
     else:
         delta_leaf_L = 0
 
@@ -305,6 +305,34 @@ def calculate_ratio_DZ_postE(leaf_L, leaf_Lmax, pseudostem_L):
     else:
         return  min( ( 1 - (1 + (le - x)/(le - lm)) * ( ((x - lb)/(le - lb)) ** ((le - lb)/(le - lm)) ) ) * leaf_L / min( leaf_L, pseudostem_L) , 1.)
 
+def calculate_ratio_EOZ_postE(leaf_L, leaf_Lmax, pseudostem_L):
+    """ Ratio of the hiddenzone length which is made of elongation-only zone.
+        The model was fitted on litterature data on wheat.
+    :Parameters:
+        - `leaf_L` (:class:`float`) - Current leaf length (m)
+        - `leaf_Lmax` (:class:`float`) - Final leaf length (m)
+        - `pseudostem_L` (:class:`float`) - Length of the pseudostem (m)
+    :Returns:
+        ratio_DZ (dimensionless)
+    :Returns Type:
+        :class:`float`
+    """
+    # a0 = 0
+    # a1 = -0.09019475
+    # a2 = 1.436207
+    # a3 = 0.5117864
+    # a4 = -0.1725012
+
+    a0 = 0
+    a1 = 0.6498
+    a2 = 4.96305
+    a3 = 8.00954
+    a4 = 5.9866
+    a5 = 1.64043
+
+    leaf_L_norm = log10(leaf_L / leaf_Lmax)
+
+    return  min( max(0., a0 + a1 * leaf_L_norm + a2 * leaf_L_norm**2 + a3 * leaf_L_norm**3 + a4 * leaf_L_norm**4 + a5 * leaf_L_norm**5 ) * leaf_L / min( leaf_L, pseudostem_L) , 1.)
 
 def calculate_leaf_emergence(leaf_L, leaf_pseudostem_length):
     """Calculate if a given leaf has emerged from its pseudostem
@@ -429,7 +457,7 @@ def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
     """
     conc_fructan = fructan / mstruct
     if opt_croiss_fix:
-        SSLW = parameters.leaf_SSLW_dict[leaf_rank]
+        SSLW = parameters.leaf_SSLW_dict2[leaf_rank]
     else :
         SSLW = parameters.min_SSLW + (parameters.max_SSLW - parameters.min_SSLW) * conc_fructan / (conc_fructan + parameters.Ksslw)
     return SSLW

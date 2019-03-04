@@ -45,12 +45,13 @@ Temp_Ttransition = 9  # Below this temperature f = linear function of temperatur
 # -------------------------------------------------------------------------------------------------------------------
 # Exponential elongation
 RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154 , 9 : 0.00000152 , 10 : 0.00000135 , 11 : 0.0000013 } # s-1 at 12°C fit dec 18
-# { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Ljutovac 2002 RER (s-1 at 12°C
+# { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Ljutovac 2002 RER (s-1 at 12°C)
 # {3: 4.1E-06, 4: 4.1E-06, 5: 6E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.2E-06, 9: 3.08E-06, 10: 2.9E-06, 11: 2.75E-06}  # MG2
 # {3 : 0.00000279 ,4 : 0.00000279 ,5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000154 , 9 : 0.0000015 , 10 : 0.00000146 , 11 : 0.00000146 }#: s-1 at 12°C fit nov 18
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
+RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000172 , 7 : 0.000001625 , 8 : 0.00000151 , 9 : 0.00000131 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit dec 18
 RERmax = 2.8E-06 #: s-1 at 12°C # 5.56e-06 Ljutovac 2002 # 4e-06 Anne # 2.43E-06 RB v1
 Kc = 300 # 145.6 # 350 #: affinity coefficient of RER to C (µmol g-1)
 Kn = 300 #200 #16.64  # 40  #: affinity coefficient of RER to C N (µmol g-1)
@@ -73,13 +74,14 @@ min_SSLW = 22  #: g m-2
 max_SSLW = 50  #: g m-2
 ratio_LSSW_SSLW = 0.003  #: ratio lineic structural mass sheath / specific strucutal mass lamina of the specific structural dry masses (from data of J. Bertheloot, 2004) (m)
 #TODO : adapter ce paramètre pour les feuilles adultes car change drastiquement
-leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 17,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004)
-leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.52,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
+leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 18,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
+leaf_SSLW_dict2 = {1: 15,2: 23,3: 25,4: 18,5: 22,6: 25,7: 20,8: 23,9: 26,10: 28,11: 31} # Test correction
+leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.4,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
 
 # Share of division zone in the growing leaf.  The model was fitted on litterature data on wheat(Fournier 2005, Beemer and Masle 1996, Schuppler 1998)
-ratio_DZ_l_init = 0.065#0.25     #: normalized length of the whole leaf
-ratio_DZ_l_mid = 0.075#0.4       #: normalized length of the whole leaf
-ratio_DZ_l_end = 0.9#0.9       #: normalized length of the whole leaf
+ratio_DZ_l_init = 0.065     #: normalized length of the whole leaf
+ratio_DZ_l_mid = 0.075      #: normalized length of the whole leaf
+ratio_DZ_l_end = 0.9        #: normalized length of the whole leaf
 
 # -------------------------------------------------------------------------------------------------------------------
 # --- Internodes
@@ -98,7 +100,7 @@ nb_PLASTO_internode_init = 5  #: Delay between leaf initiation and internode ini
 internode_L_init = 5E-5       #: Initial internode length (m)
 
 # Automate elongation
-te_IN = 210 * 3600 * 24 /12 #: end of internode elongation in automate growth; Malvoisin 1984 II
+te_IN = 210 * 3600 * 24 /12  #: end of internode elongation in automate growth; Malvoisin 1984 II
 tm_IN = 156 * 3600 * 24 /12  #: time at which internode elongation rate is maximal in automate growth (s); Malvoisin 1984 II
 tb_IN = -70 * 3600 * 24 /12  #: beginning of internode elongation in automate growth (s); Malvoisin 1984 II
 L0_INT = (1 + (te_IN / (te_IN - tm_IN))) * (min(1.0, float(-tb_IN) / float(te_IN - tb_IN))**((te_IN - tb_IN) / (te_IN - tm_IN)))  #: Internode length at t=0 in automate growth (beta function) (m)
@@ -140,16 +142,17 @@ class HiddenZoneInit(object):
         self.hiddenzone_age = 0
         self.is_over = False
         self.ratio_DZ = 1.0
+        self.ratio_EOZ = 0
 
         # Default values used for RER calculation in elong wheat
         self.sucrose = 5E-6                      #: µmol C
         self.amino_acids = 4E-6                  #: µmol N
-        self.fructan = 0                         #: µmol C
+        self.fructan = 0 #1.7e-3                    #: µmol C - about 10% DM
         self.leaf_enclosed_mstruct = 1.26E-07    #: g
-        self.internode_enclosed_mstruct = 0               #: g
+        self.internode_enclosed_mstruct = 0      #: g
         self.mstruct = self.leaf_enclosed_mstruct + self.internode_enclosed_mstruct  #: g
         self.leaf_enclosed_Nstruct = self.leaf_enclosed_mstruct * 0.005  #: g, parameter value in growth wheat #: g
-        self.internode_enclosed_Nstruct = self.internode_enclosed_mstruct * 0.0322  #: g, parameter value in growth wheat
+        self.internode_enclosed_Nstruct = self.internode_enclosed_mstruct * 0.0322   #: g, parameter value in growth wheat
         self.Nstruct = self.leaf_enclosed_Nstruct + self.internode_enclosed_Nstruct  #: g
         self.proteins = 2.6E-03                   #: µmol N - about 9% N
         self.conc_cytokinins = 150                #: AU / g mstruct

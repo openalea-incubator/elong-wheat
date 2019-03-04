@@ -46,7 +46,7 @@ HIDDENZONE_OUTPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_ag
                       'internode_distance_to_emerge',
                       'delta_internode_distance_to_emerge', 'leaf_L', 'delta_leaf_L', 'internode_L', 'delta_internode_L', 'leaf_Lmax', 'lamina_Lmax', 'sheath_Lmax', 'leaf_Wmax', 'SSLW', 'LSSW',
                       'leaf_is_emerged', 'internode_Lmax', 'LSIW', 'internode_is_visible', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct',
-                      'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct','is_over','ratio_DZ']
+                      'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct','is_over','ratio_DZ','ratio_EOZ']
 ELEMENT_OUTPUTS = ['length', 'is_growing', 'diameter', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'mstruct', 'Nstruct','age','Nresidual','max_proteins','senesced_length']
 SAM_OUTPUTS = ['SAM_temperature','delta_teq','delta_teq_roots', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'height', 'cohort','sum_TT']
 
@@ -323,6 +323,7 @@ class Simulation(object):
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
 
                         curr_hiddenzone_outputs['ratio_DZ'] = 1
+                        curr_hiddenzone_outputs['ratio_EOZ'] = 0
 
                     else:  #: After the emergence of the previous leaf.
                         # delta leaf length
@@ -334,6 +335,7 @@ class Simulation(object):
                         delta_leaf_L = leaf_L - hiddenzone_inputs['leaf_L']
 
                         curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length )
+                        curr_hiddenzone_outputs['ratio_EOZ'] = model.calculate_ratio_EOZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length)
 
                         lamina_id = hiddenzone_id + tuple(['blade', 'LeafElement1'])
                         #: Lamina has not emerged
