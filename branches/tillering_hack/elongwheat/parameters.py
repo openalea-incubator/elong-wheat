@@ -51,7 +51,7 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
-RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000172 , 7 : 0.000001625 , 8 : 0.00000151 , 9 : 0.00000131 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit dec 18
+RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000172 , 7 : 0.000001625 , 8 : 0.00000151 , 9 : 0.00000131 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
 RERmax = 2.8E-06 #: s-1 at 12°C # 5.56e-06 Ljutovac 2002 # 4e-06 Anne # 2.43E-06 RB v1
 Kc = 300 # 145.6 # 350 #: affinity coefficient of RER to C (µmol g-1)
 Kn = 300 #200 #16.64  # 40  #: affinity coefficient of RER to C N (µmol g-1)
@@ -65,10 +65,12 @@ L0 = abs((1 + (te / (te - tm))) * (min(1.0, float(-tb) / float(te - tb))**((te -
 FITTED_L0 = 0.01557936             #: Fitted value of leaf length at t=0 after rescaling the beta function with L0 (m); Fournier 2005 sur courbe corrigee
 OFFSET_LEAF = FITTED_L0 - L0       #: Offset used for the final fitting of the beta function (m)
 SCALING_FACTOR_LEAF = 1/FITTED_L0  #: Scaling factor of the leaf in automate growth (dimensionless)
+leaf_Lmax_MAX = 0.7                #: Maximum leaf_Lmax (m)
 
 # Leaf maximal width
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)
 EC_wmax = 0.3  #: variation de + ou - 15% de maximal leaf width (SU)
+leaf_Wmax_MAX = 0.03 #: Maximum leaf_Wmax (m)
 Ksslw = 4160   #: Affinite SSLW aux fructanes (µmol C g-1)
 min_SSLW = 22  #: g m-2
 max_SSLW = 50  #: g m-2
@@ -128,6 +130,7 @@ class HiddenZoneInit(object):
         self.leaf_Lmax = None                    #: m, no calculation before emergence Ln-1
         self.lamina_Lmax = None                  #: m, no calculation before emergence Ln-1
         self.sheath_Lmax = None                  #: m, no calculation before emergence Ln-1
+        self.leaf_Wmax_int = 1e-6                #: m, intermediate maximum leaf width
         self.leaf_Wmax = None                    #: m, no calculation before emergence Ln-1
         self.SSLW = None                         #: g m-2, no calculation before emergence Ln-1
         self.LSSW = None                         #: g m-1, no calculation before emergence Ln-1 (about 2)

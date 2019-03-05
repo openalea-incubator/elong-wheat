@@ -215,22 +215,19 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
         :class:`float`
     """
 
-    if sucrose > 0 and amino_acids > 0:
-        if opt_croiss_fix:
-            RER_max = parameters.RERmax_dict[leaf_rank]
-            delta_leaf_L = leaf_L * RER_max * delta_teq
-        else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.4 # *2 too low, *2.5 slightly too much
+    if sucrose > 0 and amino_acids > 0 :
+        # if opt_croiss_fix:
+        #     RER_max = parameters.RERmax_dict[leaf_rank]
+        #     delta_leaf_L = leaf_L * RER_max * delta_teq
+        # else:
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.3 # *2.4 slightly too much
             # Enzymatic rate for bi-substrats with random fixation
-            # rate = conc_sucrose * conc_amino_acids/(conc_sucrose*conc_amino_acids + Ka*conc_amino_acids + Kb*conc_sucrose + Ka_bis*Kb)
-            # NB : we can define Ka_bis = Ka if sucrose and amino_acids are independant of the enzymatic activity
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
 
             Ka = 20
             Kb = 70
-            Ka_bis = Kb
-            delta_leaf_L = leaf_L * RER_max * delta_teq * conc_sucrose * conc_amino_acids/(conc_sucrose*conc_amino_acids + Ka*conc_amino_acids + Kb*conc_sucrose + Ka_bis*Kb)
+            delta_leaf_L = leaf_L * RER_max * delta_teq /(1 + Ka/conc_sucrose) /(1 + Kb/conc_amino_acids)
             # delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
     else:
         delta_leaf_L = 0
@@ -378,7 +375,7 @@ def calculate_leaf_Lmax(leaf_Lem_prev):
     :Returns Type:
         :class:`float`
     """
-    return leaf_Lem_prev * parameters.SCALING_FACTOR_LEAF
+    return min( leaf_Lem_prev * parameters.SCALING_FACTOR_LEAF, parameters.leaf_Lmax_MAX )
 
 
 def calculate_SL_ratio(phytomer_rank):
@@ -427,7 +424,33 @@ def calculate_sheath_Lmax(leaf_Lmax, lamina_Lmax):
     return leaf_Lmax - lamina_Lmax
 
 
-def calculate_leaf_Wmax(lamina_Lmax, fructan, mstruct,leaf_rank):
+def calculate_delta_leaf_Wmax_int(leaf_Wmax_int, sucrose, amino_acids, mstruct, delta_teq, leaf_rank):
+    """ Intermediate maximal leaf width.
+
+    :Parameters:
+        - `lamina_Lmax` (:class:`float`) - Maximal lamina length (m)
+        - `fructan` (:class:`float`) - Fructan in the hidden zone at the time of the previous leaf emergence (µmol C).
+        - `mstruct` (:class:`float`) - Mstruct of the hidden zone at the time of the previous leaf emergence (g).
+    :Returns:
+        maximal leaf width (m)
+    :Returns Type:
+        :class:`float`
+    """
+    if sucrose > 0 and amino_acids > 0:
+        RER_max = 1e-6/0.4
+        # Enzymatic rate for bi-substrats with random fixation
+        conc_amino_acids = (amino_acids / mstruct)
+        conc_sucrose = (sucrose / mstruct)
+
+        KN = 20
+        KC = 200
+        delta_leaf_Wmax_int = leaf_Wmax_int * RER_max * delta_teq / (1 + KC/conc_sucrose) / (1 + KN/conc_amino_acids)
+    else:
+        delta_leaf_Wmax_int = 0
+
+    return  delta_leaf_Wmax_int
+
+def calculate_leaf_Wmax(lamina_Lmax, fructan, mstruct, leaf_rank, leaf_Wmax_int):
     """ Maximal leaf width.
     0.0575 et 0.12 issu graph Dornbush
 
@@ -440,8 +463,8 @@ def calculate_leaf_Wmax(lamina_Lmax, fructan, mstruct,leaf_rank):
     :Returns Type:
         :class:`float`
     """
-    (0.0575 * lamina_Lmax - 0.00012) * (parameters.EC_wmax * 2 * parameters.Ksslw / (parameters.Ksslw + (fructan / mstruct)) + (1 - parameters.EC_wmax))  # TODO: a remplacer
-    return parameters.leaf_Wmax_dict[leaf_rank]
+    # (0.0575 * lamina_Lmax - 0.00012) * (parameters.EC_wmax * 2 * parameters.Ksslw / (parameters.Ksslw + (fructan / mstruct)) + (1 - parameters.EC_wmax))  # TODO: a remplacer
+    return  min( parameters.leaf_Wmax_dict[leaf_rank] , parameters.leaf_Wmax_MAX) #min( leaf_Wmax_int , parameters.leaf_Wmax_MAX ) #
 
 
 def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
