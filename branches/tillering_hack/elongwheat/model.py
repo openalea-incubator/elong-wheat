@@ -220,7 +220,7 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
         #     RER_max = parameters.RERmax_dict[leaf_rank]
         #     delta_leaf_L = leaf_L * RER_max * delta_teq
         # else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.32 # *2.4 slightly too much
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.3 # *2.4 slightly too much
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
@@ -451,10 +451,10 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_f
     else :
         K = 0.05
         a = 0.0001
-        conc_mini = 100
+        conc_mini = 1800
         Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
         Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
-    return  Wmax
+    return Wmax
 
 
 def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
