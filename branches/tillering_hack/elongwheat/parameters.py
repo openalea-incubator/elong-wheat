@@ -71,6 +71,7 @@ leaf_Lmax_MAX = 0.7                #: Maximum leaf_Lmax (m)
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)
 EC_wmax = 0.3  #: variation de + ou - 15% de maximal leaf width (SU)
 leaf_Wmax_MAX = 0.03 #: Maximum leaf_Wmax (m)
+leaf_Wmax_MIN = 0.002 #: Manimum leaf_Wmax (m)
 Ksslw = 4160   #: Affinite SSLW aux fructanes (µmol C g-1)
 min_SSLW = 22  #: g m-2
 max_SSLW = 50  #: g m-2
@@ -130,7 +131,7 @@ class HiddenZoneInit(object):
         self.leaf_Lmax = None                    #: m, no calculation before emergence Ln-1
         self.lamina_Lmax = None                  #: m, no calculation before emergence Ln-1
         self.sheath_Lmax = None                  #: m, no calculation before emergence Ln-1
-        self.leaf_Wmax_int = 1e-6                #: m, intermediate maximum leaf width
+        self.leaf_Wmax_int = 2e-7                #: m, intermediate maximum leaf width
         self.leaf_Wmax = None                    #: m, no calculation before emergence Ln-1
         self.SSLW = None                         #: g m-2, no calculation before emergence Ln-1
         self.LSSW = None                         #: g m-1, no calculation before emergence Ln-1 (about 2)

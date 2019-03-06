@@ -325,7 +325,7 @@ class Simulation(object):
                         curr_hiddenzone_outputs['ratio_DZ'] = 1
                         curr_hiddenzone_outputs['ratio_EOZ'] = 0
 
-                        curr_hiddenzone_outputs['leaf_Wmax_int'] = model.calculate_delta_leaf_Wmax_int( hiddenzone_inputs['leaf_Wmax_int'], hiddenzone_inputs['sucrose'],
+                        curr_hiddenzone_outputs['leaf_Wmax_int'] += model.calculate_delta_leaf_Wmax_int( hiddenzone_inputs['leaf_Wmax_int'], hiddenzone_inputs['sucrose'],
                                                                                                         hiddenzone_inputs['amino_acids'],hiddenzone_inputs['mstruct'],
                                                                                                         curr_SAM_outputs['delta_teq'], phytomer_id)
 

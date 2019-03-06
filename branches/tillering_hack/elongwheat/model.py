@@ -220,7 +220,7 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
         #     RER_max = parameters.RERmax_dict[leaf_rank]
         #     delta_leaf_L = leaf_L * RER_max * delta_teq
         # else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.3 # *2.4 slightly too much
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.38 # *2.4 slightly too much
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
@@ -444,7 +444,7 @@ def calculate_delta_leaf_Wmax_int(leaf_Wmax_int, sucrose, amino_acids, mstruct, 
 
         KN = 20
         KC = 200
-        delta_leaf_Wmax_int = leaf_Wmax_int * RER_max * delta_teq / (1 + KC/conc_sucrose) / (1 + KN/conc_amino_acids)
+        delta_leaf_Wmax_int = leaf_Wmax_int * parameters.RERmax_dict2[leaf_rank] * 2.3 * delta_teq / (1 + KC/conc_sucrose) / (1 + KN/conc_amino_acids)
     else:
         delta_leaf_Wmax_int = 0
 
@@ -464,7 +464,7 @@ def calculate_leaf_Wmax(lamina_Lmax, fructan, mstruct, leaf_rank, leaf_Wmax_int)
         :class:`float`
     """
     # (0.0575 * lamina_Lmax - 0.00012) * (parameters.EC_wmax * 2 * parameters.Ksslw / (parameters.Ksslw + (fructan / mstruct)) + (1 - parameters.EC_wmax))  # TODO: a remplacer
-    return  min( parameters.leaf_Wmax_dict[leaf_rank] , parameters.leaf_Wmax_MAX) #min( leaf_Wmax_int , parameters.leaf_Wmax_MAX ) #
+    return  min( parameters.leaf_Wmax_dict[leaf_rank] , parameters.leaf_Wmax_MAX) #min( max(leaf_Wmax_int, parameters.leaf_Wmax_MIN) , parameters.leaf_Wmax_MAX ) #
 
 
 def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
