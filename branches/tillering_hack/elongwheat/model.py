@@ -446,14 +446,14 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_f
         :class:`float`
     """
     # (0.0575 * lamina_Lmax - 0.00012) * (parameters.EC_wmax * 2 * parameters.Ksslw / (parameters.Ksslw + (fructan / mstruct)) + (1 - parameters.EC_wmax))  # TODO: a remplacer
-    if opt_croiss_fix:
-        Wmax = parameters.leaf_Wmax_dict[leaf_rank]
-    else :
-        K = 0.05
-        a = 0.0001
-        conc_mini = 1800
-        Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
-        Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
+    # if opt_croiss_fix:
+    #     Wmax = parameters.leaf_Wmax_dict[leaf_rank]
+    # else :
+    K = 0.05
+    a = 6e-5#1e-6
+    conc_mini = 1700
+    Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
+    Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
     return Wmax
 
 
