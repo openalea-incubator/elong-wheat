@@ -216,10 +216,10 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
     """
 
     if sucrose > 0 and amino_acids > 0 :
-        # if opt_croiss_fix:
-        #     RER_max = parameters.RERmax_dict[leaf_rank]
-        #     delta_leaf_L = leaf_L * RER_max * delta_teq
-        # else:
+        if opt_croiss_fix:
+            RER_max = parameters.RERmax_dict[leaf_rank]
+            delta_leaf_L = leaf_L * RER_max * delta_teq
+        else:
             RER_max = parameters.RERmax_dict2[leaf_rank] * 2.3 # *2.4 slightly too much
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
@@ -228,7 +228,6 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             Ka = 20
             Kb = 70
             delta_leaf_L = leaf_L * RER_max * delta_teq /(1 + Ka/conc_sucrose) /(1 + Kb/conc_amino_acids)
-            # delta_leaf_L = leaf_L * RER_max * delta_teq * ((sucrose / mstruct) / (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) / (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
     else:
         delta_leaf_L = 0
 
@@ -446,18 +445,18 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_f
         :class:`float`
     """
     # (0.0575 * lamina_Lmax - 0.00012) * (parameters.EC_wmax * 2 * parameters.Ksslw / (parameters.Ksslw + (fructan / mstruct)) + (1 - parameters.EC_wmax))  # TODO: a remplacer
-    # if opt_croiss_fix:
-    #     Wmax = parameters.leaf_Wmax_dict[leaf_rank]
-    # else :
-    K = 0.05
-    a = 6e-5#1e-6
-    conc_mini = 1700
-    Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
-    Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
+    if opt_croiss_fix:
+        Wmax = parameters.leaf_Wmax_dict[leaf_rank]
+    else :
+        K = 0.05
+        a = 6e-5
+        conc_mini = 1700
+        Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
+        Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
     return Wmax
 
 
-def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
+def calculate_SSLW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     """ Structural Specific Lamina Weight.
 
     :Parameters:
@@ -468,15 +467,18 @@ def calculate_SSLW(fructan, mstruct, leaf_rank, opt_croiss_fix):
     :Returns Type:
         :class:`float`
     """
-    conc_fructan = fructan / mstruct
     if opt_croiss_fix:
         SSLW = parameters.leaf_SSLW_dict2[leaf_rank]
     else :
-        SSLW = parameters.min_SSLW + (parameters.max_SSLW - parameters.min_SSLW) * conc_fructan / (conc_fructan + parameters.Ksslw)
-    return SSLW
+        a = 0.01
+        conc_mini = 1700
+        SSLW = parameters.leaf_SSLW_nominal[leaf_rank] + a * (integral_conc_sucr - conc_mini)
+        # SSLW = parameters.leaf_SSLW_MIN + (parameters.leaf_SSLW_MAX - parameters.leaf_SSLW_MIN) * integral_conc_sucr /(integral_conc_sucr + 1700 )
+
+    return max( min(SSLW, parameters.leaf_SSLW_MAX), parameters.leaf_SSLW_MIN)
 
 
-def calculate_LSSW(SSLW,leaf_rank, opt_croiss_fix):
+def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     """ Lineic Structural Sheath Weight.
 
     :Parameters:
@@ -489,8 +491,10 @@ def calculate_LSSW(SSLW,leaf_rank, opt_croiss_fix):
     if opt_croiss_fix:
         LSSW = parameters.leaf_LSSW_dict[leaf_rank]
     else :
-        LSSW = SSLW * parameters.ratio_LSSW_SSLW
-    return LSSW
+        a = 0.0008
+        conc_mini = 1700
+        LSSW = parameters.leaf_LSSW_nominal[leaf_rank] + a * (integral_conc_sucr - conc_mini)
+    return max( min(LSSW, 0.8), 0.05)
 
 
 def calculate_emerged_sheath_L(leaf_L, leaf_pseudostem_length, lamina_L):

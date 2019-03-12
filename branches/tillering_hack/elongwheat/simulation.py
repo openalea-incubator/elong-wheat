@@ -373,8 +373,8 @@ class Simulation(object):
                                 # Define lamina_Wmax and structural weight of the current sheath and lamina
                                 curr_hiddenzone_outputs['leaf_Wmax'] = model.calculate_leaf_Wmax(curr_hiddenzone_outputs['lamina_Lmax'], hiddenzone_id[2],
                                                                                                  curr_hiddenzone_outputs['integral_conc_sucrose'], opt_croiss_fix)
-                                curr_hiddenzone_outputs['SSLW'] = model.calculate_SSLW(curr_hiddenzone_outputs['fructan'], curr_hiddenzone_outputs['mstruct'], hiddenzone_id[2], opt_croiss_fix)
-                                curr_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(curr_hiddenzone_outputs['SSLW'], hiddenzone_id[2], opt_croiss_fix)
+                                curr_hiddenzone_outputs['SSLW'] = model.calculate_SSLW( hiddenzone_id[2], curr_hiddenzone_outputs['integral_conc_sucrose'], opt_croiss_fix)
+                                curr_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(hiddenzone_id[2], curr_hiddenzone_outputs['integral_conc_sucrose'], opt_croiss_fix)
 
 
                         #: Lamina has emerged and is growing
