@@ -79,11 +79,11 @@ ratio_LSSW_SSLW = 0.003  #: ratio lineic structural mass sheath / specific struc
 #TODO : adapter ce paramètre pour les feuilles adultes car change drastiquement
 leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 18,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_dict2 = {1: 15,2: 23,3: 25,4: 18,5: 22,6: 25,7: 20,8: 23,9: 26,10: 28,11: 31} # Test correction
-leaf_SSLW_nominal = {1: 15,2: 23,3: 25,4: 25,5: 22,6: 21,7: 19,8: 19,9: 19,10: 19,11: 19}
+leaf_SSLW_nominal = {1: 15,2: 23,3: 25,4: 25,5: 22,6: 21,7: 19,8: 19,9: 21,10: 22,11: 24}
 leaf_SSLW_MIN = 10
 leaf_SSLW_MAX = 50
 leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.4,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
-leaf_LSSW_nominal = {1: 0.09,2: 0.088,3: 0.11,4: 0.25,5: 0.2,6: 0.19,7: 0.18,8: 0.18,9: 0.18,10: 0.18,11: 0.18}
+leaf_LSSW_nominal = {1: 0.09, 2: 0.088, 3: 0.11, 4: 0.19, 5: 0.17, 6: 0.21, 7: 0.23, 8: 0.36, 9: 0.45, 10: 0.5, 11: 0.58}
 
 # Share of division zone in the growing leaf.  The model was fitted on litterature data on wheat(Fournier 2005, Beemer and Masle 1996, Schuppler 1998)
 ratio_DZ_l_init = 0.065     #: normalized length of the whole leaf
@@ -164,6 +164,7 @@ class HiddenZoneInit(object):
         self.Nstruct = self.leaf_enclosed_Nstruct + self.internode_enclosed_Nstruct  #: g
         self.proteins = 2.6E-03                   #: µmol N - about 9% N
         self.conc_cytokinins = 150                #: AU / g mstruct
+        self.integral_conc_sucrose = self.sucrose / self.mstruct #: µmol C / g mstruct
 
 
 class ElementInit(object):

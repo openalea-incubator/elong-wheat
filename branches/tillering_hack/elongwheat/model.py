@@ -220,13 +220,13 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             RER_max = parameters.RERmax_dict[leaf_rank]
             delta_leaf_L = leaf_L * RER_max * delta_teq
         else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 2.3 # *2.4 slightly too much
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 3 # *2.3
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
 
-            Ka = 20
-            Kb = 70
+            Ka = 100# 20
+            Kb = 100#70
             delta_leaf_L = leaf_L * RER_max * delta_teq /(1 + Ka/conc_sucrose) /(1 + Kb/conc_amino_acids)
     else:
         delta_leaf_L = 0
@@ -432,8 +432,7 @@ def calculate_integral_conc_sucrose( integral_conc_sucr, hiddenzone_age, delta_t
     return new_integral_conc_sucr
 
 def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_fix):
-    """ Maximal leaf width.
-    0.0575 et 0.12 issu graph Dornbush
+    """ Maximal lamina width.
 
     :Parameters:
         - `lamina_Lmax` (:class:`float`) - Maximal lamina length (m)
@@ -449,7 +448,7 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_f
         Wmax = parameters.leaf_Wmax_dict[leaf_rank]
     else :
         K = 0.05
-        a = 6e-5
+        a = 5.7e-5
         conc_mini = 1700
         Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
         Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
@@ -491,7 +490,7 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     if opt_croiss_fix:
         LSSW = parameters.leaf_LSSW_dict[leaf_rank]
     else :
-        a = 0.0008
+        a = 0.0001
         conc_mini = 1700
         LSSW = parameters.leaf_LSSW_nominal[leaf_rank] + a * (integral_conc_sucr - conc_mini)
     return max( min(LSSW, 0.8), 0.05)
