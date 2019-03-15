@@ -51,7 +51,7 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
-RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000170 , 7 : 0.00000160 , 8 : 0.00000151 , 9 : 0.00000141 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
+RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000170 , 7 : 0.00000160 , 8 : 0.00000145 , 9 : 0.0000013 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
 RERmax = 2.8E-06 #: s-1 at 12°C # 5.56e-06 Ljutovac 2002 # 4e-06 Anne # 2.43E-06 RB v1
 Kc = 300 # 145.6 # 350 #: affinity coefficient of RER to C (µmol g-1)
 Kn = 300 #200 #16.64  # 40  #: affinity coefficient of RER to C N (µmol g-1)
@@ -79,7 +79,7 @@ ratio_LSSW_SSLW = 0.003  #: ratio lineic structural mass sheath / specific struc
 #TODO : adapter ce paramètre pour les feuilles adultes car change drastiquement
 leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 18,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_dict2 = {1: 15,2: 23,3: 25,4: 18,5: 22,6: 25,7: 20,8: 23,9: 26,10: 28,11: 31} # Test correction
-leaf_SSLW_nominal = {1: 15,2: 23,3: 25,4: 25,5: 22,6: 21,7: 19,8: 19,9: 21,10: 22,11: 24}
+leaf_SSLW_nominal = {1: 15,2: 23,3: 25,4: 23,5: 22,6: 21,7: 19,8: 19,9: 21,10: 22,11: 24}
 leaf_SSLW_MIN = 10
 leaf_SSLW_MAX = 50
 leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.4,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
