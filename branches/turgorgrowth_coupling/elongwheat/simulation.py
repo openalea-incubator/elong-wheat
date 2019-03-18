@@ -197,6 +197,7 @@ class Simulation(object):
         # Elements
         for element_id, element_inputs in sorted(all_element_inputs.items()):
             # Update element age, only used to adapt the element geometry (MTG)
+            if 'HiddenElement' in element_id and element_inputs['is_growing']: continue
             curr_age = all_element_inputs[element_id]['age']
             SAM_id = element_id[:2]  # tuple( [element_id[0], 'MS'])
             curr_SAM_outputs = all_SAM_outputs[SAM_id]
@@ -303,11 +304,19 @@ class Simulation(object):
                         sheath_hidden_length = 0.
                         new_sheath = parameters.ElementInit().__dict__
                         self.outputs['elements'][hidden_sheath_id] = new_sheath
-                    total_sheath_L = sheath_hidden_length + self.inputs['elements'][visible_sheath_id]['length']
-                    updated_sheath_hidden_length = min(total_sheath_L, leaf_pseudostem_length)
-                    updated_sheath_visible_length = total_sheath_L - updated_sheath_hidden_length
-                    self.outputs['elements'][hidden_sheath_id]['length'] = updated_sheath_hidden_length
-                    self.outputs['elements'][visible_sheath_id]['length'] = updated_sheath_visible_length
+
+                    if visible_sheath_id in self.inputs['elements'].keys():
+                        sheath_visible_length = self.inputs['elements'][visible_sheath_id]['length']
+
+                        total_sheath_L = sheath_hidden_length + sheath_visible_length
+                        updated_sheath_hidden_length = min(total_sheath_L, leaf_pseudostem_length)
+                        updated_sheath_visible_length = total_sheath_L - updated_sheath_hidden_length
+                        self.outputs['elements'][hidden_sheath_id]['length'] = updated_sheath_hidden_length
+                        self.outputs['elements'][visible_sheath_id]['length'] = updated_sheath_visible_length
+                    else:  #: no visible sheath
+                        total_sheath_L = sheath_hidden_length
+                        updated_sheath_hidden_length = min(total_sheath_L, leaf_pseudostem_length)
+                        self.outputs['elements'][hidden_sheath_id]['length'] = updated_sheath_hidden_length
 
                 #: Leaf elongation
                 if curr_hiddenzone_outputs['leaf_is_growing']:
