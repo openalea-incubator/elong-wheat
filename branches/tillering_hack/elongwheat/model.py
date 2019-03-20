@@ -220,13 +220,13 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             RER_max = parameters.RERmax_dict[leaf_rank]
             delta_leaf_L = leaf_L * RER_max * delta_teq
         else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 3 # *2.3
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 1.86 #3 # *2.3
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
 
             Ka = 100# 20
-            Kb = 100#70
+            Kb = 40#70
             delta_leaf_L = leaf_L * RER_max * delta_teq /(1 + Ka/conc_sucrose) /(1 + Kb/conc_amino_acids)
     else:
         delta_leaf_L = 0
@@ -471,7 +471,8 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     else :
         a = 0.01
         conc_mini = 1700
-        SSLW = parameters.leaf_SSLW_nominal[leaf_rank] + a * (integral_conc_sucr - conc_mini)
+        SSLW_nominal = 20 #parameters.leaf_SSLW_nominal[leaf_rank]
+        SSLW = SSLW_nominal + a * (integral_conc_sucr - conc_mini)
         # SSLW = parameters.leaf_SSLW_MIN + (parameters.leaf_SSLW_MAX - parameters.leaf_SSLW_MIN) * integral_conc_sucr /(integral_conc_sucr + 1700 )
 
     return max( min(SSLW, parameters.leaf_SSLW_MAX), parameters.leaf_SSLW_MIN)
@@ -492,7 +493,8 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     else :
         a = 0.0001
         conc_mini = 1700
-        LSSW = parameters.leaf_LSSW_nominal[leaf_rank] + a * (integral_conc_sucr - conc_mini)
+        LSSW_nominal = 0.0403*leaf_rank - 0.0099 #parameters.leaf_LSSW_nominal[leaf_rank]
+        LSSW = LSSW_nominal + a * (integral_conc_sucr - conc_mini)
     return max( min(LSSW, 0.8), 0.05)
 
 
