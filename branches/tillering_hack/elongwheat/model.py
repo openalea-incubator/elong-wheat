@@ -579,10 +579,10 @@ def calculate_LSIW(LSSW, leaf_rank, opt_croiss_fix):
     :Returns Type:
         :class:`float`
     """
-    if opt_croiss_fix:
-        LSIW =parameters.internode_LSIW_dict[leaf_rank]
-    else :
-        LSIW = LSSW * parameters.ratio_LSIW_LSSW # TODO : changer mode de calcul car rapport non stable suivant numéro de phytomère
+    # if opt_croiss_fix:
+    LSIW =parameters.internode_LSIW_dict[leaf_rank]
+    # else :
+    #     LSIW = LSSW * parameters.ratio_LSIW_LSSW # TODO : changer mode de calcul car rapport non stable suivant numéro de phytomère
     return LSIW
 
 
@@ -624,14 +624,14 @@ def calculate_delta_internode_L_preL(internode_rank, sucrose, internode_L, amino
     """
 
     if sucrose > 0 and amino_acids > 0:
-        if opt_croiss_fix:
+        # if opt_croiss_fix:
             RER_max = parameters.RERmax_dict_IN[internode_rank]
             delta_internode_L = internode_L * RER_max * delta_teq
-        else :
-            RER_max = parameters.RERmax
-            delta_internode_L = internode_L * RER_max * delta_teq * ((sucrose / mstruct) /
-                                                                 (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) /
-                                                                                                           (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
+        # else :
+        #     RER_max = parameters.RERmax
+        #     delta_internode_L = internode_L * RER_max * delta_teq * ((sucrose / mstruct) /
+        #                                                          (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) /
+        #                                                                                                    (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
     else:
         delta_internode_L = 0
 

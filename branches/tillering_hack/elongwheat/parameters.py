@@ -88,7 +88,7 @@ leaf_LSSW_nominal = {1: 0.09, 2: 0.088, 3: 0.11, 4: 0.19, 5: 0.17, 6: 0.21, 7: 0
 # Share of division zone in the growing leaf.  The model was fitted on litterature data on wheat(Fournier 2005, Beemer and Masle 1996, Schuppler 1998)
 ratio_DZ_l_init = 0.065     #: normalized length of the whole leaf
 ratio_DZ_l_mid = 0.075      #: normalized length of the whole leaf
-ratio_DZ_l_end = 0.9        #: normalized length of the whole leaf
+ratio_DZ_l_end = 0.7 #0.9        #: normalized length of the whole leaf
 
 # -------------------------------------------------------------------------------------------------------------------
 # --- Internodes
@@ -100,16 +100,20 @@ RERmax_dict_IN = { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 :
 # estimate from Ljutovac 2002 over the period until leaf ligulation i.e. wider than in the model.
 # Because i) not enought data if we consider only up to previous leaf ligulation, ii) same exponential like period
 
-SCALING_FACTOR_INT = 59  # 5.2 #: Scaling factor of the internode in automate growth (dimensionless), Malvoisin 1984 II
+# SCALING_FACTOR_INT = 59  # 5.2 #: Scaling factor of the internode in automate growth (dimensionless), Malvoisin 1984 II
+SCALING_FACTOR_INT = 53  # 5.2 #: Scaling factor of the internode in automate growth (dimensionless), Ljutovac 2002, 250pl.m-2
 
 # Initiation of internode elongation
 nb_PLASTO_internode_init = 5  #: Delay between leaf initiation and internode initiation expressed as a number of plastochron. From Malvoisin 1984b, associated with priodia of 5.10-4 m
 internode_L_init = 5E-5       #: Initial internode length (m)
 
 # Automate elongation
-te_IN = 210 * 3600 * 24 /12  #: end of internode elongation in automate growth; Malvoisin 1984 II
-tm_IN = 156 * 3600 * 24 /12  #: time at which internode elongation rate is maximal in automate growth (s); Malvoisin 1984 II
-tb_IN = -70 * 3600 * 24 /12  #: beginning of internode elongation in automate growth (s); Malvoisin 1984 II
+# te_IN = 210 * 3600 * 24 /12  #: end of internode elongation in automate growth; Malvoisin 1984 II
+# tm_IN = 156 * 3600 * 24 /12  #: time at which internode elongation rate is maximal in automate growth (s); Malvoisin 1984 II
+# tb_IN = -70 * 3600 * 24 /12  #: beginning of internode elongation in automate growth (s); Malvoisin 1984 II
+te_IN = 274 * 3600 * 24 /12  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
+tm_IN = 159 * 3600 * 24 /12  #: time at which internode elongation rate is maximal in automate growth (s);Ljutovac 2002, 250pl.m-2
+tb_IN = 0  #: beginning of internode elongation in automate growth (s);Ljutovac 2002, 250pl.m-2
 L0_INT = (1 + (te_IN / (te_IN - tm_IN))) * (min(1.0, float(-tb_IN) / float(te_IN - tb_IN))**((te_IN - tb_IN) / (te_IN - tm_IN)))  #: Internode length at t=0 in automate growth (beta function) (m)
 OFFSET_INT = 1 / SCALING_FACTOR_INT - L0_INT
 
@@ -183,5 +187,6 @@ class ElementInit(object):
         self.fructan = 0              #: µmol C
         self.proteins = 0             #: µmol N
         self.mstruct = 0              #: g
+        self.max_mstruct = 0          #: g
         self.Nstruct = 0              #: g
         self.cytokinins = 0           #: g
