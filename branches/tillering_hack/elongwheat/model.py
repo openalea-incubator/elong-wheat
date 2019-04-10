@@ -220,21 +220,19 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             RER_max = parameters.RERmax_dict[leaf_rank]
             delta_leaf_L = leaf_L * RER_max * delta_teq
         else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 1.86 #3 # *2.3
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 1.86
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
 
-            Ka = 100# 20
-            Kb = 40#70
-            delta_leaf_L = leaf_L * RER_max * delta_teq /(1 + Ka/conc_sucrose) /(1 + Kb/conc_amino_acids)
+            delta_leaf_L = leaf_L * RER_max * delta_teq /(1 + parameters.RER_Kc/conc_sucrose) /(1 + parameters.RER_Kn/conc_amino_acids)
     else:
         delta_leaf_L = 0
 
     return delta_leaf_L
 
 
-def calculate_leaf_pseudo_age(leaf_pseudo_age, sucrose, amino_acids, delta_teq):
+def calculate_leaf_pseudo_age(manual_parameters, leaf_pseudo_age, sucrose, amino_acids, mstruct, delta_teq):
     """ Pseudo age of the leaf since beginning of automate elongation (s)
     :Parameters:
         - `leaf_pseudo_age` (:class:`float`) - Previous pseudo age of the leaf since beginning of automate elongation (s)
@@ -246,9 +244,19 @@ def calculate_leaf_pseudo_age(leaf_pseudo_age, sucrose, amino_acids, delta_teq):
     :Returns Type:
         :class:`float`
     """
-    delta_pseudo_age = 0
-    if sucrose > 0 and amino_acids > 0:
-        delta_pseudo_age = delta_teq
+    # delta_pseudo_age = 0
+    # if sucrose > 0 and amino_acids > 0:
+    #     delta_pseudo_age = delta_teq
+
+    conc_sucrose = sucrose / mstruct
+    conc_amino_acids = amino_acids / mstruct
+
+    Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
+    Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
+    Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
+
+    delta_pseudo_age = delta_teq * Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+
     return leaf_pseudo_age + delta_pseudo_age
 
 
@@ -423,12 +431,12 @@ def calculate_sheath_Lmax(leaf_Lmax, lamina_Lmax):
     return leaf_Lmax - lamina_Lmax
 
 
-def calculate_integral_conc_sucrose( integral_conc_sucr, hiddenzone_age, delta_teq, sucrose, mstruct ):
+def calculate_integral_conc_sucrose( integral_conc_sucr, time_since_beg_integration, delta_teq, sucrose, mstruct ):
     conc_sucrose = sucrose / mstruct
-    if hiddenzone_age == 0:
+    if time_since_beg_integration == 0:
         new_integral_conc_sucr = conc_sucrose
     else :
-        new_integral_conc_sucr = (integral_conc_sucr * hiddenzone_age + conc_sucrose * delta_teq) / (hiddenzone_age + delta_teq)
+        new_integral_conc_sucr = (integral_conc_sucr * time_since_beg_integration + conc_sucrose * delta_teq) / (time_since_beg_integration + delta_teq)
     return new_integral_conc_sucr
 
 def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_fix):
@@ -469,11 +477,16 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     if opt_croiss_fix:
         SSLW = parameters.leaf_SSLW_dict2[leaf_rank]
     else :
-        a = 0.01
-        conc_mini = 1700
-        SSLW_nominal = 20 #parameters.leaf_SSLW_nominal[leaf_rank]
-        SSLW = SSLW_nominal + a * (integral_conc_sucr - conc_mini)
-        # SSLW = parameters.leaf_SSLW_MIN + (parameters.leaf_SSLW_MAX - parameters.leaf_SSLW_MIN) * integral_conc_sucr /(integral_conc_sucr + 1700 )
+        # a = 0.01
+        # conc_mini = 1700
+        # SSLW_nominal = 20 #parameters.leaf_SSLW_nominal[leaf_rank]
+        # SSLW = SSLW_nominal + a * (integral_conc_sucr - conc_mini)
+
+        SSLW_min =5
+        SSLW_max=45
+        integral_min=500
+        integral_max=5000
+        SSLW =  (SSLW_max - SSLW_min)/(integral_max-integral_min) * integral_conc_sucr + (SSLW_min*integral_max - SSLW_max*integral_min)/(integral_max-integral_min)
 
     return max( min(SSLW, parameters.leaf_SSLW_MAX), parameters.leaf_SSLW_MIN)
 
@@ -491,10 +504,11 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     if opt_croiss_fix:
         LSSW = parameters.leaf_LSSW_dict[leaf_rank]
     else :
-        a = 0.0001
+        a = 0.00005
         conc_mini = 1700
         LSSW_nominal = 0.0403*leaf_rank - 0.0099 #parameters.leaf_LSSW_nominal[leaf_rank]
         LSSW = LSSW_nominal + a * (integral_conc_sucr - conc_mini)
+
     return max( min(LSSW, 0.8), 0.05)
 
 

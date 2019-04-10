@@ -51,10 +51,9 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
-RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000175 , 7 : 0.00000160 , 8 : 0.00000154 , 9 : 0.0000014 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
-RERmax = 2.8E-06 #: s-1 at 12°C # 5.56e-06 Ljutovac 2002 # 4e-06 Anne # 2.43E-06 RB v1
-Kc = 300 # 145.6 # 350 #: affinity coefficient of RER to C (µmol g-1)
-Kn = 300 #200 #16.64  # 40  #: affinity coefficient of RER to C N (µmol g-1)
+RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000171 , 7 : 0.00000160 , 8 : 0.00000154 , 9 : 0.00000142 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
+RER_Kc = 100  # 20 #: affinity coefficient of RER to C (µmol g-1)
+RER_Kn = 40  # 70 #: affinity coefficient of RER to C N (µmol g-1)
 
 # Automate elongation
 te = 300 * 3600 * 24 / 12 #: end of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
@@ -66,6 +65,10 @@ FITTED_L0 = 0.01557936             #: Fitted value of leaf length at t=0 after r
 OFFSET_LEAF = FITTED_L0 - L0       #: Offset used for the final fitting of the beta function (m)
 SCALING_FACTOR_LEAF = 1/FITTED_L0  #: Scaling factor of the leaf in automate growth (dimensionless)
 leaf_Lmax_MAX = 0.7                #: Maximum leaf_Lmax (m)
+
+leaf_pseudo_age_Vmax = 1
+leaf_pseudo_age_Kc = 25  #: affinity coefficient of RER to C (µmol g-1)
+leaf_pseudo_age_Kn = 2   #: affinity coefficient of RER to C N (µmol g-1)
 
 # Leaf maximal width
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)
@@ -168,7 +171,8 @@ class HiddenZoneInit(object):
         self.Nstruct = self.leaf_enclosed_Nstruct + self.internode_enclosed_Nstruct  #: g
         self.proteins = 2.6E-03                   #: µmol N - about 9% N
         self.conc_cytokinins = 150                #: AU / g mstruct
-        self.integral_conc_sucrose = self.sucrose / self.mstruct #: µmol C / g mstruct
+        self.integral_conc_sucrose_init = self.sucrose / self.mstruct #: µmol C / g mstruct
+        self.integral_conc_sucrose_em_prec = 0  #: µmol C / g mstruct
 
 
 class ElementInit(object):
