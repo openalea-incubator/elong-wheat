@@ -66,15 +66,21 @@ OFFSET_LEAF = FITTED_L0 - L0       #: Offset used for the final fitting of the b
 SCALING_FACTOR_LEAF = 1/FITTED_L0  #: Scaling factor of the leaf in automate growth (dimensionless)
 leaf_Lmax_MAX = 0.7                #: Maximum leaf_Lmax (m)
 
-leaf_pseudo_age_Vmax = 1
-leaf_pseudo_age_Kc = 25  #: affinity coefficient of RER to C (µmol g-1)
-leaf_pseudo_age_Kn = 2   #: affinity coefficient of RER to C N (µmol g-1)
+leaf_pseudo_age_Vmax = 1.25
+leaf_pseudo_age_Kc = 150  #: affinity coefficient of RER to C (µmol g-1)
+leaf_pseudo_age_Kn = 8   #: affinity coefficient of RER to C N (µmol g-1)
 
 # Leaf maximal width
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)
 EC_wmax = 0.3  #: variation de + ou - 15% de maximal leaf width (SU)
 leaf_Wmax_MAX = 0.03 #: Maximum leaf_Wmax (m)
 leaf_Wmax_MIN = 0.002 #: Manimum leaf_Wmax (m)
+leaf_W_L_base = 0.05
+leaf_W_L_Regul_MIN = 0.5
+leaf_W_L_Regul_MAX = 2
+leaf_W_L_int_MIN = 0
+leaf_W_L_int_MAX = 5000
+
 Ksslw = 4160   #: Affinite SSLW aux fructanes (µmol C g-1)
 min_SSLW = 22  #: g m-2
 max_SSLW = 50  #: g m-2
@@ -171,7 +177,6 @@ class HiddenZoneInit(object):
         self.Nstruct = self.leaf_enclosed_Nstruct + self.internode_enclosed_Nstruct  #: g
         self.proteins = 2.6E-03                   #: µmol N - about 9% N
         self.conc_cytokinins = 150                #: AU / g mstruct
-        self.integral_conc_sucrose_init = self.sucrose / self.mstruct #: µmol C / g mstruct
         self.integral_conc_sucrose_em_prec = 0  #: µmol C / g mstruct
 
 

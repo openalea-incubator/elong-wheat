@@ -231,41 +231,42 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
 
     return delta_leaf_L
 
-
-def calculate_leaf_pseudo_age(manual_parameters, leaf_pseudo_age, sucrose, amino_acids, mstruct, delta_teq):
+def calculate_leaf_pseudo_age(leaf_pseudo_age, delta_teq):
     """ Pseudo age of the leaf since beginning of automate elongation (s)
     :Parameters:
         - `leaf_pseudo_age` (:class:`float`) - Previous pseudo age of the leaf since beginning of automate elongation (s)
-        - `sucrose` (:class:`float`) - Amount of sucrose (µmol C)
-        - `amino_acids` (:class:`float`) - Amount of amino acids (µmol N)
         - `delta_teq` (:class:`float`) - Temperature-consensated time = time duration at a reference temperature (s)
     :Returns:
         Updated leaf_pseudo_age (s)
     :Returns Type:
         :class:`float`
     """
-    # delta_pseudo_age = 0
-    # if sucrose > 0 and amino_acids > 0:
-    #     delta_pseudo_age = delta_teq
+    return leaf_pseudo_age + delta_teq
 
-    conc_sucrose = sucrose / mstruct
-    conc_amino_acids = amino_acids / mstruct
+def Beta_function(leaf_pseudo_age):
+    """ Normalized eaf length from the emergence of the previous leaf to the end of elongation (automate function depending on leaf pseudo age).
+        :Parameters:
+            - `leaf_pseudo_age` (:class:`float`) - Pseudo age of the leaf since beginning of automate elongation (s)
+        :Returns:
+            leaf_L (m)
+        :Returns Type:
+            :class:`float`
+        """
 
-    Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
-    Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
-    Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
+    return abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm)))
+                                                 * (min(1.0, float(leaf_pseudo_age - parameters.tb) / float(parameters.te - parameters.tb)) **
+                                                    ((parameters.te - parameters.tb) / (parameters.te - parameters.tm)))) + parameters.OFFSET_LEAF
 
-    delta_pseudo_age = delta_teq * Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
-
-    return leaf_pseudo_age + delta_pseudo_age
-
-
-def calculate_L_postE(leaf_pseudo_age, leaf_Lmax):
+def calculate_deltaL_postE(manual_parameters, leaf_pseudo_age, prev_leaf_L, leaf_Lmax, sucrose, amino_acids, mstruct):
     """ Leaf length from the emergence of the previous leaf to the end of elongation (automate function depending on leaf pseudo age and final length).
 
     :Parameters:
         - `leaf_pseudo_age` (:class:`float`) - Pseudo age of the leaf since beginning of automate elongation (s)
+        - `prev_leaf_L` (:class:`float`) - Leaf length before elongation (m)
         - `leaf_Lmax` (:class:`float`) - Final leaf length (m)
+        - `sucrose` (:class:`float`) - Amount of sucrose (µmol C)
+        - `amino_acids` (:class:`float`) - Amount of amino acids (µmol N)
+        - `mstruct` (:class:`float`) - Structural mass (µmol N)
     :Returns:
         leaf_L (m)
     :Returns Type:
@@ -273,15 +274,41 @@ def calculate_L_postE(leaf_pseudo_age, leaf_Lmax):
     """
 
     if leaf_pseudo_age <= parameters.tb:
-        leaf_L = parameters.FITTED_L0 * leaf_Lmax
+        delta_leaf_L = prev_leaf_L - parameters.FITTED_L0 * leaf_Lmax
     elif leaf_pseudo_age < parameters.te:
-        leaf_L = min(leaf_Lmax, leaf_Lmax * (abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm)))
-                                                 * (min(1.0, float(leaf_pseudo_age - parameters.tb) / float(parameters.te - parameters.tb)) **
-                                                    ((parameters.te - parameters.tb) / (parameters.te - parameters.tm)))) + parameters.OFFSET_LEAF))
-    else:
-        leaf_L = leaf_Lmax
+        # Beta function
+        leaf_L_Beta = min(leaf_Lmax, leaf_Lmax * Beta_function(leaf_pseudo_age) )
 
-    return leaf_L
+        # Regulation by C and N
+        conc_sucrose = sucrose / mstruct
+        conc_amino_acids = amino_acids / mstruct
+
+        Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
+        Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
+        Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
+
+        regul = Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+
+        # Current leaf length
+        delta_leaf_L = regul * (leaf_L_Beta - prev_leaf_L)
+    else:
+        delta_leaf_L = 0
+
+    return delta_leaf_L
+
+def calculate_update_leaf_Lmax(prev_leaf_Lmax, leaf_L, leaf_pseudo_age):
+    """ Update leaf_Lmax following a reduction of delta_leaf_L due to C and N regulation
+
+        :Parameters:
+            - `prev_leaf_Lmax` (:class:`float`) - Previous final leaf length (m)
+            - `leaf_Lmax` (:class:`float`) - Leaf length (m)
+            - `leaf_pseudo_age` (:class:`float`) - Pseudo age of the leaf since beginning of automate elongation (s)
+        :Returns:
+            leaf_Lmax (m)
+        :Returns Type:
+            :class:`float`
+        """
+    return leaf_L + prev_leaf_Lmax * (1 - Beta_function(leaf_pseudo_age))
 
 def calculate_ratio_DZ_postE(leaf_L, leaf_Lmax, pseudostem_L):
     """ Ratio of the hiddenzone length which is made of division zone.
@@ -451,15 +478,15 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_f
     :Returns Type:
         :class:`float`
     """
-    # (0.0575 * lamina_Lmax - 0.00012) * (parameters.EC_wmax * 2 * parameters.Ksslw / (parameters.Ksslw + (fructan / mstruct)) + (1 - parameters.EC_wmax))  # TODO: a remplacer
     if opt_croiss_fix:
         Wmax = parameters.leaf_Wmax_dict[leaf_rank]
     else :
-        K = 0.05
-        a = 5.7e-5
-        conc_mini = 1700
-        Wmax_metabolism = lamina_Lmax * (K + a * (integral_conc_sucr - conc_mini) )
-        Wmax = min(max(Wmax_metabolism, parameters.leaf_Wmax_MIN), parameters.leaf_Wmax_MAX)
+        W_L_Regul =  min(max(
+            (parameters.leaf_W_L_Regul_MAX - parameters.leaf_W_L_Regul_MIN)/(parameters.leaf_W_L_int_MAX-parameters.leaf_W_L_int_MIN) * integral_conc_sucr
+            + (parameters.leaf_W_L_Regul_MIN*parameters.leaf_W_L_int_MAX - parameters.leaf_W_L_Regul_MAX*parameters.leaf_W_L_int_MIN)/(parameters.leaf_W_L_int_MAX-parameters.leaf_W_L_int_MIN),
+                         parameters.leaf_W_L_Regul_MIN), parameters.leaf_W_L_Regul_MAX)
+        W_L_Ratio = parameters.leaf_W_L_base * W_L_Regul
+        Wmax = lamina_Lmax * W_L_Ratio
     return Wmax
 
 

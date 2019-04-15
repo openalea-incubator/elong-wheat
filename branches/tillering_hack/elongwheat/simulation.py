@@ -37,7 +37,7 @@ HIDDENZONE_INPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_age
                      'hiddenzone_age','leaf_Lmax', 'lamina_Lmax', 'sheath_Lmax','leaf_Wmax', 'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'LSIW', 'internode_is_visible',
                      'sucrose', 'amino_acids', 'fructan',
                      'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'is_over',
-                     'integral_conc_sucrose_init','integral_conc_sucrose_em_prec']
+                     'integral_conc_sucrose_em_prec']
 ELEMENT_INPUTS = ['length', 'is_growing','age']
 SAM_INPUTS = ['SAM_temperature','delta_teq','teq_since_primordium', 'status', 'nb_leaves', 'GA', 'height', 'cohort','sum_TT']
 
@@ -47,7 +47,7 @@ HIDDENZONE_OUTPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_ag
                       'hiddenzone_age','delta_leaf_pseudostem_length', 'internode_distance_to_emerge',
                       'delta_internode_distance_to_emerge', 'leaf_L', 'delta_leaf_L', 'internode_L', 'delta_internode_L', 'leaf_Lmax', 'lamina_Lmax', 'sheath_Lmax', 'leaf_Wmax',
                       'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'LSIW', 'internode_is_visible', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct',
-                      'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'is_over', 'ratio_DZ', 'ratio_EOZ', 'integral_conc_sucrose_init',
+                      'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'is_over', 'ratio_DZ', 'ratio_EOZ',
                       'integral_conc_sucrose_em_prec']
 ELEMENT_OUTPUTS = ['length', 'is_growing', 'diameter', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'mstruct', 'Nstruct','age','Nresidual','max_proteins','senesced_length']
 SAM_OUTPUTS = ['SAM_temperature','delta_teq','delta_teq_roots', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'height', 'cohort','sum_TT']
@@ -321,30 +321,32 @@ class Simulation(object):
                         curr_hiddenzone_outputs['ratio_DZ'] = 1
                         curr_hiddenzone_outputs['ratio_EOZ'] = 0
 
-                        curr_hiddenzone_outputs['integral_conc_sucrose_init'] = model.calculate_integral_conc_sucrose( hiddenzone_inputs['integral_conc_sucrose_init'],
-                                                                                                                       hiddenzone_inputs['hiddenzone_age'],
-                                                                                                            curr_SAM_outputs['delta_teq'], hiddenzone_inputs['sucrose'], hiddenzone_inputs['mstruct'] )
-
                     else:  #: After the emergence of the previous leaf.
-                        # delta leaf length
-                        leaf_pseudo_age = model.calculate_leaf_pseudo_age(manual_parameters, hiddenzone_inputs['leaf_pseudo_age'], hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'],
-                                                                          hiddenzone_inputs['mstruct'], curr_SAM_outputs['delta_teq'])
+
+                        # Leaf length
+                        leaf_pseudo_age = model.calculate_leaf_pseudo_age(hiddenzone_inputs['leaf_pseudo_age'],curr_SAM_outputs['delta_teq'])
+
                         curr_hiddenzone_outputs['leaf_pseudo_age'] = leaf_pseudo_age
                         curr_hiddenzone_outputs['delta_leaf_pseudo_age'] = leaf_pseudo_age - hiddenzone_inputs['leaf_pseudo_age']
-                        leaf_L = model.calculate_L_postE(leaf_pseudo_age, curr_hiddenzone_outputs['leaf_Lmax'])
-                        delta_leaf_L = leaf_L - hiddenzone_inputs['leaf_L']
 
-                        curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length )
+                        delta_leaf_L = model.calculate_deltaL_postE(manual_parameters, leaf_pseudo_age, hiddenzone_inputs['leaf_L'], hiddenzone_inputs['leaf_Lmax'],
+                                                                    hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'] )
+                        leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
+
+                        # Update leaf_Lmax, lamina_Lmax and sheath_Lmax
+                        curr_hiddenzone_outputs['leaf_Lmax'] = model.calculate_update_leaf_Lmax(hiddenzone_inputs['leaf_Lmax'], leaf_L, leaf_pseudo_age)
+                        sheath_lamina_ratio = model.calculate_SL_ratio(hiddenzone_id[2])
+                        curr_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], sheath_lamina_ratio)
+                        curr_hiddenzone_outputs['sheath_Lmax'] = model.calculate_sheath_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], curr_hiddenzone_outputs['lamina_Lmax'])
+
+                        # Ratio (mass) of Division Zone and Elongation-Only Zone in the hiddenzone
+                        curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length)
                         curr_hiddenzone_outputs['ratio_EOZ'] = model.calculate_ratio_EOZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length)
 
                         lamina_id = hiddenzone_id + tuple(['blade', 'LeafElement1'])
                         #: Lamina has not emerged
                         if not curr_hiddenzone_outputs['leaf_is_emerged']:
 
-                            curr_hiddenzone_outputs['integral_conc_sucrose_init'] = model.calculate_integral_conc_sucrose(hiddenzone_inputs['integral_conc_sucrose_init'],
-                                                                                                                          hiddenzone_inputs['hiddenzone_age'],
-                                                                                                                     curr_SAM_outputs['delta_teq'], hiddenzone_inputs['sucrose'],
-                                                                                                                     hiddenzone_inputs['mstruct'])
                             curr_hiddenzone_outputs['integral_conc_sucrose_em_prec'] = model.calculate_integral_conc_sucrose(hiddenzone_inputs['integral_conc_sucrose_em_prec'],
                                                                                                                              hiddenzone_inputs['leaf_pseudo_age'],
                                                                                                                              curr_SAM_outputs['delta_teq'], hiddenzone_inputs['sucrose'],
@@ -380,7 +382,7 @@ class Simulation(object):
 
                                 # Define lamina_Wmax and structural weight of the current sheath and lamina
                                 curr_hiddenzone_outputs['leaf_Wmax'] = model.calculate_leaf_Wmax(curr_hiddenzone_outputs['lamina_Lmax'], hiddenzone_id[2],
-                                                                                                 curr_hiddenzone_outputs['integral_conc_sucrose_init'], opt_croiss_fix)
+                                                                                                 curr_hiddenzone_outputs['integral_conc_sucrose_em_prec'], opt_croiss_fix)
                                 curr_hiddenzone_outputs['SSLW'] = model.calculate_SSLW( hiddenzone_id[2], curr_hiddenzone_outputs['integral_conc_sucrose_em_prec'], opt_croiss_fix)
                                 curr_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(hiddenzone_id[2], curr_hiddenzone_outputs['integral_conc_sucrose_em_prec'], opt_croiss_fix)
 
