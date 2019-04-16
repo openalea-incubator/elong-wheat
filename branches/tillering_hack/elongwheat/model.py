@@ -380,13 +380,14 @@ def calculate_leaf_emergence(leaf_L, leaf_pseudostem_length):
     return leaf_L > (leaf_pseudostem_length)# + epsilon)
 
 
-def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id):
+def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id, lamina_Lmax):
     """ Emerged lamina length given by the difference between leaf length and leaf pseudostem length.
 
     :Parameters:
         - `leaf_L` (:class:`float`) - Total leaf length (m)
         - `leaf_pseudostem_length` (:class:`float`) - Length of the pseudostem (m)
         - `hiddenzone_id` (:class:`tuple`) - Id of the hidden zone (plant_id, axis_id, phytomer_id)
+        - `lamina_Lmax` (:class:`float`) - Final lamina length (m)
     :Returns:
         lamina length (m)
     :Returns Type:
@@ -396,7 +397,7 @@ def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id):
     if lamina_L <= 0:
         raise Warning('The leaf is shorther than its pseudostem for {}'.format(hiddenzone_id))
 
-    return max(0, lamina_L)
+    return max(0, min(lamina_L, lamina_Lmax) )
 
 
 def calculate_leaf_Lmax(leaf_Lem_prev):
@@ -539,19 +540,20 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     return max( min(LSSW, 0.8), 0.05)
 
 
-def calculate_emerged_sheath_L(leaf_L, leaf_pseudostem_length, lamina_L):
+def calculate_emerged_sheath_L(leaf_L, leaf_pseudostem_length, lamina_L, sheath_Lmax):
     """ Emerged sheath length. Assumes that leaf_L = leaf_pseudostem_length + emerged_sheath_L + lamina_L
 
     :Parameters:
         - `leaf_L` (:class:`float`) - Total leaf length (m)
         - `leaf_pseudostem_length` (:class:`float`) - Length of the pseudostem (m)
         - `lamina_L` (:class:`float`) - Lamina length (m)
+        - `sheath_Lmax` (:class:`float`) - Final sheath length (m)
     :Returns:
         sheath length (m)
     :Returns Type:
         :class:`float`
     """
-    return leaf_L - leaf_pseudostem_length - lamina_L
+    return max( min(leaf_L - leaf_pseudostem_length - lamina_L, sheath_Lmax), 0)
 
 
 # -------------------------------------------------------------------------------------------------------------------
