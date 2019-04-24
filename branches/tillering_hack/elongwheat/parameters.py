@@ -78,8 +78,8 @@ leaf_Wmax_MIN = 0.002 #: Manimum leaf_Wmax (m)
 leaf_W_L_base = 0.05
 leaf_W_L_Regul_MIN = 0.5
 leaf_W_L_Regul_MAX = 2
-leaf_W_L_int_MIN = 0
-leaf_W_L_int_MAX = 5000
+leaf_W_L_int_MIN = 200
+leaf_W_L_int_MAX = 4600
 
 Ksslw = 4160   #: Affinite SSLW aux fructanes (µmol C g-1)
 min_SSLW = 22  #: g m-2
@@ -186,6 +186,7 @@ class ElementInit(object):
     """
     def __init__(self):
         self.is_growing = True
+        self.is_over = False
         self.length = 0               #: m
         self.senesced_length = 0      #: m
         self.age = 0                  #: Thermal Time

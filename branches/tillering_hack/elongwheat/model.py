@@ -248,7 +248,7 @@ def Beta_function(leaf_pseudo_age):
         :Parameters:
             - `leaf_pseudo_age` (:class:`float`) - Pseudo age of the leaf since beginning of automate elongation (s)
         :Returns:
-            leaf_L (m)
+            normalized leaf_L (m)
         :Returns Type:
             :class:`float`
         """
@@ -512,8 +512,8 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
 
         SSLW_min =5
         SSLW_max=45
-        integral_min=500
-        integral_max=5000
+        integral_min=800
+        integral_max=4800
         SSLW =  (SSLW_max - SSLW_min)/(integral_max-integral_min) * integral_conc_sucr + (SSLW_min*integral_max - SSLW_max*integral_min)/(integral_max-integral_min)
 
     return max( min(SSLW, parameters.leaf_SSLW_MAX), parameters.leaf_SSLW_MIN)
@@ -667,14 +667,16 @@ def calculate_delta_internode_L_preL(internode_rank, sucrose, internode_L, amino
     """
 
     if sucrose > 0 and amino_acids > 0:
-        # if opt_croiss_fix:
+        if opt_croiss_fix:
             RER_max = parameters.RERmax_dict_IN[internode_rank]
             delta_internode_L = internode_L * RER_max * delta_teq
-        # else :
-        #     RER_max = parameters.RERmax
-        #     delta_internode_L = internode_L * RER_max * delta_teq * ((sucrose / mstruct) /
-        #                                                          (parameters.Kc + (sucrose / mstruct))) * (((amino_acids / mstruct) ** 3) /
-        #                                                                                                    (parameters.Kn ** 3 + (amino_acids / mstruct) ** 3))
+        else:
+            RER_max = parameters.RERmax_dict_IN[internode_rank] * 1.86
+            # Enzymatic rate for bi-substrats with random fixation
+            conc_amino_acids = (amino_acids / mstruct)
+            conc_sucrose = (sucrose / mstruct)
+
+            delta_internode_L = internode_L * RER_max * delta_teq / (1 + parameters.RER_Kc / conc_sucrose) / (1 + parameters.RER_Kn / conc_amino_acids)
     else:
         delta_internode_L = 0
 
@@ -711,16 +713,35 @@ def calculate_short_internode_Lmax(internode_L_lig, internode_pseudo_age):
         :class:`float`
     """
 
-    L0 = 1 / calculate_internode_L_postL(internode_pseudo_age, 1)  #: Initial relative length of the short internode according to its pseudo age
+    L0 = 1 / Beta_function_internode(internode_pseudo_age)  #: Initial relative length of the short internode according to its pseudo age
     internode_Lmax = internode_L_lig * L0
 
     return internode_Lmax
 
+def Beta_function_internode(internode_pseudo_age):
+    """ Normalized internode length from the emergence of the previous leaf to the end of elongation (automate function depending on internode pseudo age).
+        :Parameters:
+            - `internode_pseudo_age` (:class:`float`) - Pseudo age of the leaf since beginning of automate elongation (s)
+        :Returns:
+            normalized internode_L (m)
+        :Returns Type:
+            :class:`float`
+        """
+    return (abs((1 + (max(0, (parameters.te_IN - internode_pseudo_age)) / (parameters.te_IN - parameters.tm_IN))) *
+                (min(1.0, float(internode_pseudo_age - parameters.tb_IN) /
+                     float(parameters.te_IN - parameters.tb_IN)) ** ((parameters.te_IN - parameters.tb_IN) /
+                                                                     (parameters.te_IN - parameters.tm_IN)))) + parameters.OFFSET_INT)
 
-def calculate_internode_L_postL(internode_pseudo_age, internode_Lmax):
-    """ internode length, from the ligulation of the previous leaf to the end of elongation (predefined kinetic depending on internode pseudo age).
+def calculate_delta_internode_L_postL(manual_parameters, internode_pseudo_age, prev_internode_L, internode_Lmax, sucrose, amino_acids, mstruct):
+    """ Internode length, from the ligulation of the previous leaf to the end of elongation (automate function depending on leaf pseudo age and final length).
 
     :Parameters:
+            - `internode_pseudo_age` (:class:`float`) - Pseudo age of the internode since beginning of automate elongation (s)
+            - `prev_internode_L` (:class:`float`) - Internode length before elongation (m)
+            - `internode_Lmax` (:class:`float`) - Final internode length (m)
+            - `sucrose` (:class:`float`) - Amount of sucrose (µmol C)
+            - `amino_acids` (:class:`float`) - Amount of amino acids (µmol N)
+            - `mstruct` (:class:`float`) - Structural mass (µmol N)
         - `internode_pseudo_age` (:class:`float`) - Pseudo age of the internode since beginning of internode automate growth (s)
         - `internode_Lmax` (:class:`float`) - Final internode length (m)
     :Returns:
@@ -730,16 +751,41 @@ def calculate_internode_L_postL(internode_pseudo_age, internode_Lmax):
     """
 
     if internode_pseudo_age <= parameters.tb_IN:
-        internode_L = (1 / parameters.SCALING_FACTOR_INT) * internode_Lmax
+        delta_internode_L = prev_internode_L - parameters.L0_INT * internode_Lmax
     elif internode_pseudo_age < parameters.te_IN:
-        internode_L = min(internode_Lmax, internode_Lmax * (abs((1 + (max(0, (parameters.te_IN - internode_pseudo_age)) / (parameters.te_IN - parameters.tm_IN))) *
-                                                                (min(1.0, float(internode_pseudo_age - parameters.tb_IN) /
-                                                                     float(parameters.te_IN - parameters.tb_IN)) ** ((parameters.te_IN - parameters.tb_IN) /
-                                                                                                                     (parameters.te_IN - parameters.tm_IN)))) + parameters.OFFSET_INT))
-    else:
-        internode_L = internode_Lmax
-    return internode_L
+        # Beta function
+        internode_L_Beta = min(internode_Lmax, internode_Lmax * Beta_function_internode(internode_pseudo_age) )
 
+        # Regulation by C and N
+        conc_sucrose = sucrose / mstruct
+        conc_amino_acids = amino_acids / mstruct
+
+        Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
+        Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
+        Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
+
+        regul = Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+
+        # Current internode length
+        delta_internode_L = regul * (internode_L_Beta - prev_internode_L)
+    else:
+        delta_internode_L = 0
+
+    return delta_internode_L
+
+def calculate_update_internode_Lmax(prev_internode_Lmax, internode_L, internode_pseudo_age):
+    """ Update internode_Lmax following a reduction of delta_leaf_L due to C and N regulation
+
+        :Parameters:
+            - `prev_internode_Lmax` (:class:`float`) - Previous final internode length (m)
+            - `internode_L` (:class:`float`) - Internode length (m)
+            - `internode_pseudo_age` (:class:`float`) - Pseudo age of the internode since beginning of automate elongation (s)
+        :Returns:
+            leaf_Lmax (m)
+        :Returns Type:
+            :class:`float`
+        """
+    return internode_L + prev_internode_Lmax * (1 - Beta_function_internode(internode_pseudo_age))
 
 def calculate_internode_visibility(internode_L, internode_distance_to_emerge):
     """Calculate if a given internode is visible

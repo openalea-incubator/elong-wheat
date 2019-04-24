@@ -38,7 +38,7 @@ HIDDENZONE_INPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_age
                      'sucrose', 'amino_acids', 'fructan',
                      'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'is_over',
                      'integral_conc_sucrose_em_prec']
-ELEMENT_INPUTS = ['length', 'is_growing','age']
+ELEMENT_INPUTS = ['length', 'is_growing','age','is_over']
 SAM_INPUTS = ['SAM_temperature','delta_teq','teq_since_primordium', 'status', 'nb_leaves', 'GA', 'height', 'cohort','sum_TT']
 
 #: the outputs computed by ElongWheat
@@ -49,7 +49,7 @@ HIDDENZONE_OUTPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_ag
                       'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'LSIW', 'internode_is_visible', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct',
                       'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'is_over', 'ratio_DZ', 'ratio_EOZ',
                       'integral_conc_sucrose_em_prec']
-ELEMENT_OUTPUTS = ['length', 'is_growing', 'diameter', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'mstruct', 'Nstruct','age','Nresidual','max_proteins','senesced_length']
+ELEMENT_OUTPUTS = ['length', 'is_growing', 'diameter', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'mstruct', 'Nstruct','age','Nresidual','max_proteins','senesced_length','is_over']
 SAM_OUTPUTS = ['SAM_temperature','delta_teq','delta_teq_roots', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'height', 'cohort','sum_TT']
 
 #: the inputs and outputs of ElongWheat.
@@ -336,11 +336,8 @@ class Simulation(object):
                                                                     hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'] )
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
 
-                        # Update leaf_Lmax, lamina_Lmax and sheath_Lmax
+                        # Update leaf_Lmax. Subsequently, lamina_Lmax and sheath_Lmax will be updated depending of each element status (growing or mature)
                         curr_hiddenzone_outputs['leaf_Lmax'] = model.calculate_update_leaf_Lmax(hiddenzone_inputs['leaf_Lmax'], leaf_L, leaf_pseudo_age)
-                        sheath_lamina_ratio = model.calculate_SL_ratio(hiddenzone_id[2])
-                        curr_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], sheath_lamina_ratio)
-                        curr_hiddenzone_outputs['sheath_Lmax'] = model.calculate_sheath_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], curr_hiddenzone_outputs['lamina_Lmax'])
 
                         # Ratio (mass) of Division Zone and Elongation-Only Zone in the hiddenzone
                         curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length)
@@ -392,6 +389,12 @@ class Simulation(object):
                         #: Lamina has emerged and is growing
                         elif curr_hiddenzone_outputs['leaf_is_emerged'] and all_element_inputs[lamina_id]['is_growing']:
                             curr_lamina_outputs = all_element_outputs[lamina_id]
+
+                            # Update lamina_Lmax and sheath_Lmax based on updates of leaf_Lmax
+                            sheath_lamina_ratio = model.calculate_SL_ratio(hiddenzone_id[2])
+                            curr_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], sheath_lamina_ratio)
+                            curr_hiddenzone_outputs['sheath_Lmax'] = model.calculate_sheath_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], curr_hiddenzone_outputs['lamina_Lmax'])
+
                             # Length of emerged lamina
                             lamina_L = model.calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id,  curr_hiddenzone_outputs['lamina_Lmax'])
                             curr_lamina_outputs['length'] = lamina_L
@@ -436,6 +439,9 @@ class Simulation(object):
 
                             hidden_sheath_id = hiddenzone_id + tuple(['sheath', 'HiddenElement'])
                             curr_hidden_sheath_outputs = all_element_outputs[hidden_sheath_id]
+
+                            # Update only sheath_Lmax based on updates of leaf_Lmax
+                            curr_hiddenzone_outputs['sheath_Lmax'] = curr_hiddenzone_outputs['leaf_Lmax'] - curr_hiddenzone_outputs['lamina_Lmax']
 
                             # Length of emerged sheath
                             lamina_L = self.outputs['elements'][hiddenzone_id + tuple(['blade', 'LeafElement1'])]['length']
@@ -513,8 +519,12 @@ class Simulation(object):
                             if np.isnan(curr_hiddenzone_outputs['internode_Lmax']):
                                 curr_hiddenzone_outputs['internode_Lmax'] = model.calculate_short_internode_Lmax(curr_hiddenzone_outputs['internode_L'], curr_hiddenzone_outputs['internode_pseudo_age'])
 
-                            internode_L = model.calculate_internode_L_postL(curr_hiddenzone_outputs['internode_pseudo_age'], curr_hiddenzone_outputs['internode_Lmax'])
-                            delta_internode_L = internode_L - curr_hiddenzone_outputs['internode_L']
+                            delta_internode_L = model.calculate_delta_internode_L_postL(manual_parameters, curr_hiddenzone_outputs['internode_pseudo_age'], hiddenzone_inputs['internode_L'],
+                                                                                        hiddenzone_inputs['internode_Lmax'],hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'] )
+                            internode_L = hiddenzone_inputs['internode_L'] + delta_internode_L
+
+                            # Update internode_Lmax
+                            curr_hiddenzone_outputs['internode_Lmax'] = model.calculate_update_internode_Lmax(hiddenzone_inputs['internode_Lmax'], internode_L, internode_pseudo_age)
 
                             #: Internode is not visible
                             if not curr_hiddenzone_outputs['internode_is_visible']:
