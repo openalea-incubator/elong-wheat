@@ -333,7 +333,7 @@ class Simulation(object):
                         curr_hiddenzone_outputs['delta_leaf_pseudo_age'] = leaf_pseudo_age - hiddenzone_inputs['leaf_pseudo_age']
 
                         delta_leaf_L = model.calculate_deltaL_postE(manual_parameters, leaf_pseudo_age, hiddenzone_inputs['leaf_L'], hiddenzone_inputs['leaf_Lmax'],
-                                                                    hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'] )
+                                                                    hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'] , opt_croiss_fix)
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
 
                         # Update leaf_Lmax. Subsequently, lamina_Lmax and sheath_Lmax will be updated depending of each element status (growing or mature)
@@ -473,7 +473,7 @@ class Simulation(object):
 
                 #: Internode elongation
                 #: Initialisation of internode elongation
-                if (not curr_hiddenzone_outputs['internode_is_growing']) and curr_hiddenzone_outputs['internode_L'] == 0:
+                if (not curr_hiddenzone_outputs['internode_is_growing']) and (curr_hiddenzone_outputs['internode_L'] == 0):
                     #: As for leaf primordia, we neglect CN growth due to IN length initialisation
                     curr_hiddenzone_outputs['internode_is_growing'], curr_hiddenzone_outputs['internode_L'] = model.calculate_init_internode_elongation(curr_hiddenzone_outputs['hiddenzone_age'])
                     if curr_hiddenzone_outputs['internode_is_growing']:
@@ -520,7 +520,8 @@ class Simulation(object):
                                 curr_hiddenzone_outputs['internode_Lmax'] = model.calculate_short_internode_Lmax(curr_hiddenzone_outputs['internode_L'], curr_hiddenzone_outputs['internode_pseudo_age'])
 
                             delta_internode_L = model.calculate_delta_internode_L_postL(manual_parameters, curr_hiddenzone_outputs['internode_pseudo_age'], hiddenzone_inputs['internode_L'],
-                                                                                        hiddenzone_inputs['internode_Lmax'],hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'] )
+                                                                                        curr_hiddenzone_outputs['internode_Lmax'], hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'],
+                                                                                        hiddenzone_inputs['mstruct'], opt_croiss_fix )
                             internode_L = hiddenzone_inputs['internode_L'] + delta_internode_L
 
                             # Update internode_Lmax
