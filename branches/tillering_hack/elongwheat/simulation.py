@@ -525,7 +525,8 @@ class Simulation(object):
                             internode_L = hiddenzone_inputs['internode_L'] + delta_internode_L
 
                             # Update internode_Lmax
-                            curr_hiddenzone_outputs['internode_Lmax'] = model.calculate_update_internode_Lmax(hiddenzone_inputs['internode_Lmax'], internode_L, internode_pseudo_age)
+                            if ~np.isnan(hiddenzone_inputs['internode_Lmax']):
+                                curr_hiddenzone_outputs['internode_Lmax'] = model.calculate_update_internode_Lmax(hiddenzone_inputs['internode_Lmax'], internode_L, internode_pseudo_age)
 
                             #: Internode is not visible
                             if not curr_hiddenzone_outputs['internode_is_visible']:

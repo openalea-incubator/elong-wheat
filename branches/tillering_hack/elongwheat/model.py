@@ -220,7 +220,7 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             RER_max = parameters.RERmax_dict[leaf_rank]
             delta_leaf_L = leaf_L * RER_max * delta_teq
         else:
-            RER_max = parameters.RERmax_dict2[leaf_rank] * 1.86
+            RER_max = parameters.RERmax_dict2[leaf_rank] * 1.51
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             conc_sucrose = (sucrose / mstruct)
@@ -298,7 +298,7 @@ def calculate_deltaL_postE(manual_parameters, leaf_pseudo_age, prev_leaf_L, leaf
     else:
         delta_leaf_L = 0
 
-    return delta_leaf_L
+    return max(0., delta_leaf_L)
 
 def calculate_update_leaf_Lmax(prev_leaf_Lmax, leaf_L, leaf_pseudo_age):
     """ Update leaf_Lmax following a reduction of delta_leaf_L due to C and N regulation

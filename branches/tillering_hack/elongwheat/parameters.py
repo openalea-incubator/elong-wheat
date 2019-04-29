@@ -52,8 +52,8 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
 RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000171 , 7 : 0.00000160 , 8 : 0.00000154 , 9 : 0.00000142 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
-RER_Kc = 100  # 20 #: affinity coefficient of RER to C (µmol g-1)
-RER_Kn = 40  # 70 #: affinity coefficient of RER to C N (µmol g-1)
+RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
+RER_Kn = 15#40   #: affinity coefficient of RER to C N (µmol g-1)
 
 # Automate elongation
 te = 300 * 3600 * 24 / 12 #: end of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
@@ -76,10 +76,10 @@ EC_wmax = 0.3  #: variation de + ou - 15% de maximal leaf width (SU)
 leaf_Wmax_MAX = 0.03 #: Maximum leaf_Wmax (m)
 leaf_Wmax_MIN = 0.002 #: Manimum leaf_Wmax (m)
 leaf_W_L_base = 0.05
-leaf_W_L_Regul_MIN = 0.5
-leaf_W_L_Regul_MAX = 2
-leaf_W_L_int_MIN = 200
-leaf_W_L_int_MAX = 4600
+leaf_W_L_Regul_MIN = 0.6
+leaf_W_L_Regul_MAX = 1.8
+leaf_W_L_int_MIN = 0
+leaf_W_L_int_MAX = 5500
 
 Ksslw = 4160   #: Affinite SSLW aux fructanes (µmol C g-1)
 min_SSLW = 22  #: g m-2
