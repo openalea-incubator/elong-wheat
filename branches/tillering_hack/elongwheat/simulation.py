@@ -507,11 +507,10 @@ class Simulation(object):
 
                     #: After ligulation of the leaf on the previous phytomer.
                     else:
-                        internode_pseudo_age = model.calculate_internode_pseudo_age(curr_hiddenzone_outputs['internode_pseudo_age'], curr_hiddenzone_outputs['sucrose'],
-                                                                                    curr_hiddenzone_outputs['amino_acids'], curr_SAM_outputs['delta_teq'])
-                        delta_internode_pseudo_age = internode_pseudo_age - curr_hiddenzone_outputs['internode_pseudo_age']
+                        internode_pseudo_age = model.calculate_internode_pseudo_age(curr_hiddenzone_outputs['internode_pseudo_age'],  curr_SAM_outputs['delta_teq'])
+
                         curr_hiddenzone_outputs['internode_pseudo_age'] = internode_pseudo_age
-                        curr_hiddenzone_outputs['delta_internode_pseudo_age'] = delta_internode_pseudo_age
+                        curr_hiddenzone_outputs['delta_internode_pseudo_age'] = internode_pseudo_age - curr_hiddenzone_outputs['internode_pseudo_age']
 
                         #: Elongation only if Gibberelin production by SAM
                         if curr_SAM_outputs['GA']:

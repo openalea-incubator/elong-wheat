@@ -73,26 +73,27 @@ leaf_pseudo_age_Kn = 8   #: affinity coefficient of RER to C N (µmol g-1)
 # Leaf maximal width
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)
 EC_wmax = 0.3  #: variation de + ou - 15% de maximal leaf width (SU)
-leaf_Wmax_MAX = 0.03 #: Maximum leaf_Wmax (m)
-leaf_Wmax_MIN = 0.002 #: Manimum leaf_Wmax (m)
 leaf_W_L_base = 0.05
 leaf_W_L_Regul_MIN = 0.6
 leaf_W_L_Regul_MAX = 1.8
 leaf_W_L_int_MIN = 0
 leaf_W_L_int_MAX = 5500
 
-Ksslw = 4160   #: Affinite SSLW aux fructanes (µmol C g-1)
-min_SSLW = 22  #: g m-2
-max_SSLW = 50  #: g m-2
-ratio_LSSW_SSLW = 0.003  #: ratio lineic structural mass sheath / specific strucutal mass lamina of the specific structural dry masses (from data of J. Bertheloot, 2004) (m)
-#TODO : adapter ce paramètre pour les feuilles adultes car change drastiquement
 leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 18,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_dict2 = {1: 22,2: 22,3: 22,4: 22,5: 22,6: 22,7: 22,8: 24,9: 25,10: 28,11: 31} #{1: 15,2: 23,3: 25,4: 18,5: 22,6: 25,7: 20,8: 23,9: 26,10: 28,11: 31} # Test correction
-leaf_SSLW_nominal = {1: 15,2: 23,3: 25,4: 23,5: 22,6: 21,7: 19,8: 19,9: 21,10: 22,11: 24}
-leaf_SSLW_MIN = 10
-leaf_SSLW_MAX = 50
+leaf_SSLW_MIN = 5
+leaf_SSLW_MAX = 45
+leaf_SSLW_integral_min = 800
+leaf_SSLW_integral_max = 4800
+
 leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.4,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
 leaf_LSSW_nominal = {1: 0.09, 2: 0.088, 3: 0.11, 4: 0.19, 5: 0.17, 6: 0.21, 7: 0.23, 8: 0.36, 9: 0.45, 10: 0.5, 11: 0.58}
+leaf_LSSW_a = 0.00005
+leaf_LSSW_integral_min = 1700
+leaf_LSSW_nominal_A = 0.0403
+leaf_LSSW_nominal_B = -0.0099
+leaf_LSSW_MIN = 0.05
+leaf_LSSW_MAX = 0.8
 
 # Share of division zone in the growing leaf.  The model was fitted on litterature data on wheat(Fournier 2005, Beemer and Masle 1996, Schuppler 1998)
 ratio_DZ_l_init = 0.065     #: normalized length of the whole leaf

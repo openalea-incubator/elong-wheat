@@ -333,9 +333,9 @@ def calculate_ratio_DZ_postE(leaf_L, leaf_Lmax, pseudostem_L):
     l_x = leaf_L/leaf_Lmax
     x = log10(l_x)
 
-    if l_x >= parameters.ratio_DZ_l_end:
+    if l_x >= le:
         return  0
-    elif l_x <= parameters.ratio_DZ_l_init:
+    elif l_x <= lb:
         return 1
     else:
         return  min( ( 1 - (1 + (le - x)/(le - lm)) * ( ((x - lb)/(le - lb)) ** ((le - lb)/(le - lm)) ) ) * leaf_L / min( leaf_L, pseudostem_L) , 1.)
@@ -506,21 +506,17 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     :Returns Type:
         :class:`float`
     """
+    SSLW_min = parameters.leaf_SSLW_MIN
+    SSLW_max = parameters.leaf_SSLW_MAX
+
     if opt_croiss_fix:
         SSLW = parameters.leaf_SSLW_dict2[leaf_rank]
     else :
-        # a = 0.01
-        # conc_mini = 1700
-        # SSLW_nominal = 20 #parameters.leaf_SSLW_nominal[leaf_rank]
-        # SSLW = SSLW_nominal + a * (integral_conc_sucr - conc_mini)
-
-        SSLW_min =5
-        SSLW_max=45
-        integral_min=800
-        integral_max=4800
+        integral_min = parameters.leaf_SSLW_integral_min
+        integral_max = parameters.leaf_SSLW_integral_max
         SSLW =  (SSLW_max - SSLW_min)/(integral_max-integral_min) * integral_conc_sucr + (SSLW_min*integral_max - SSLW_max*integral_min)/(integral_max-integral_min)
 
-    return max( min(SSLW, parameters.leaf_SSLW_MAX), parameters.leaf_SSLW_MIN)
+    return max( min(SSLW, SSLW_max), SSLW_min )
 
 
 def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
@@ -536,12 +532,14 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, opt_croiss_fix):
     if opt_croiss_fix:
         LSSW = parameters.leaf_LSSW_dict[leaf_rank]
     else :
-        a = 0.00005
-        conc_mini = 1700
-        LSSW_nominal = 0.0403*leaf_rank - 0.0099 #parameters.leaf_LSSW_nominal[leaf_rank]
+        a = parameters.leaf_LSSW_a
+        conc_mini = parameters.leaf_LSSW_integral_min
+        nominal_A = parameters.leaf_LSSW_nominal_A
+        nominal_B = parameters.leaf_LSSW_nominal_B
+        LSSW_nominal = nominal_A*leaf_rank + nominal_B
         LSSW = LSSW_nominal + a * (integral_conc_sucr - conc_mini)
 
-    return max( min(LSSW, 0.8), 0.05)
+    return max( min(LSSW, parameters.leaf_LSSW_MAX), parameters.leaf_LSSW_MIN)
 
 
 def calculate_emerged_sheath_L(leaf_L, leaf_pseudostem_length, lamina_L, sheath_Lmax):
@@ -627,7 +625,7 @@ def calculate_LSIW(LSSW, leaf_rank, opt_croiss_fix):
         :class:`float`
     """
     # if opt_croiss_fix:
-    LSIW =parameters.internode_LSIW_dict[leaf_rank]
+    LSIW = parameters.internode_LSIW_dict[leaf_rank]
     # else :
     #     LSIW = LSSW * parameters.ratio_LSIW_LSSW # TODO : changer mode de calcul car rapport non stable suivant numéro de phytomère
     return LSIW
@@ -689,22 +687,18 @@ def calculate_delta_internode_L_preL(internode_rank, sucrose, internode_L, amino
     return delta_internode_L
 
 
-def calculate_internode_pseudo_age(internode_pseudo_age, sucrose, amino_acids,  delta_teq):
+def calculate_internode_pseudo_age(internode_pseudo_age, delta_teq):
     """ Pseudo age of the internode since beginning of automate elongation (s)
     :Parameters:
         - `internode_pseudo_age` (:class:`float`) - Pseudo age of the leaf since beginning of automate elongation (s)
-        - `sucrose` (:class:`float`) - Amount of sucrose (µmol C)
-        - `amino_acids` (:class:`float`) - Amount of amino acids (µmol N)
+
         - `delta_teq` (:class:`float`) - Temperature-consensated time = time duration at a reference temperature (s)
     :Returns:
         internode_pseudo_age (s)
     :Returns Type:
         :class:`float`
     """
-    delta_pseudo_age = 0
-    if sucrose > 0 and amino_acids > 0:
-        delta_pseudo_age = delta_teq
-    return internode_pseudo_age + delta_pseudo_age
+    return internode_pseudo_age + delta_teq
 
 
 def calculate_short_internode_Lmax(internode_L_lig, internode_pseudo_age):

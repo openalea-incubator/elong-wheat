@@ -150,7 +150,7 @@ for t_step in range(desired_t_step+1, loop_end+1, elongwheat_ts):
     Tair, Tsoil = meteo.loc[t_step, ['air_temperature', 'soil_temperature']]
 
     ## run the simulation
-    simulation_.run(Tair = Tair, Tsoil = Tsoil, opt_croiss_fix=True)
+    simulation_.run(Tair = Tair, Tsoil = Tsoil, opt_croiss_fix=True, manual_parameters = {} )
 
     ## convert the outputs to Pandas dataframe
     hiddenzone_outputs_df, element_outputs_df, SAM_outputs_df = elongwheat_converter.to_dataframes(simulation_.outputs)
