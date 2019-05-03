@@ -273,30 +273,31 @@ def calculate_deltaL_postE(manual_parameters, leaf_pseudo_age, prev_leaf_L, leaf
         :class:`float`
     """
 
-    if leaf_pseudo_age <= parameters.tb:
-        delta_leaf_L = prev_leaf_L - parameters.FITTED_L0 * leaf_Lmax
-    elif leaf_pseudo_age < parameters.te:
-        # Beta function
-        leaf_L_Beta = min(leaf_Lmax, leaf_Lmax * Beta_function(leaf_pseudo_age) )
+    delta_leaf_L = 0
 
-        if opt_croiss_fix:
-            # Current leaf length
-            delta_leaf_L = leaf_L_Beta - prev_leaf_L
-        else :
-            # Regulation by C and N
-            conc_sucrose = sucrose / mstruct
-            conc_amino_acids = amino_acids / mstruct
+    if sucrose > 0 and amino_acids >0:
+        if leaf_pseudo_age <= parameters.tb:
+            delta_leaf_L = prev_leaf_L - parameters.FITTED_L0 * leaf_Lmax
+        elif leaf_pseudo_age < parameters.te:
+            # Beta function
+            leaf_L_Beta = min(leaf_Lmax, leaf_Lmax * Beta_function(leaf_pseudo_age) )
 
-            Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
-            Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
-            Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
+            if opt_croiss_fix:
+                # Current leaf length
+                delta_leaf_L = leaf_L_Beta - prev_leaf_L
+            else :
+                # Regulation by C and N
+                conc_sucrose = sucrose / mstruct
+                conc_amino_acids = amino_acids / mstruct
 
-            regul = Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+                Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
+                Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
+                Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
 
-            # Current leaf length
-            delta_leaf_L = regul * (leaf_L_Beta - prev_leaf_L)
-    else:
-        delta_leaf_L = 0
+                regul = Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+
+                # Current leaf length
+                delta_leaf_L = regul * (leaf_L_Beta - prev_leaf_L)
 
     return max(0., delta_leaf_L)
 
@@ -752,30 +753,31 @@ def calculate_delta_internode_L_postL(manual_parameters, internode_pseudo_age, p
 
     opt_croiss_fix = True
 
-    if internode_pseudo_age <= parameters.tb_IN:
-        delta_internode_L = prev_internode_L - parameters.L0_INT * internode_Lmax
-    elif internode_pseudo_age < parameters.te_IN:
-        # Beta function
-        internode_L_Beta = min(internode_Lmax, internode_Lmax * Beta_function_internode(internode_pseudo_age) )
+    delta_internode_L = 0
 
-        if opt_croiss_fix:
-            # Current internode length
-            delta_internode_L = internode_L_Beta - prev_internode_L
-        else :
-            # Regulation by C and N
-            conc_sucrose = sucrose / mstruct
-            conc_amino_acids = amino_acids / mstruct
+    if sucrose > 0 and amino_acids > 0:
+        if internode_pseudo_age <= parameters.tb_IN:
+            delta_internode_L = prev_internode_L - parameters.L0_INT * internode_Lmax
+        elif internode_pseudo_age < parameters.te_IN:
+            # Beta function
+            internode_L_Beta = min(internode_Lmax, internode_Lmax * Beta_function_internode(internode_pseudo_age) )
 
-            Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
-            Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
-            Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
+            if opt_croiss_fix:
+                # Current internode length
+                delta_internode_L = internode_L_Beta - prev_internode_L
+            else :
+                # Regulation by C and N
+                conc_sucrose = sucrose / mstruct
+                conc_amino_acids = amino_acids / mstruct
 
-            regul = Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+                Vmax = manual_parameters.get('leaf_pseudo_age_Vmax', parameters.leaf_pseudo_age_Vmax)
+                Kc = manual_parameters.get('leaf_pseudo_age_Kc', parameters.leaf_pseudo_age_Kc)
+                Kn = manual_parameters.get('leaf_pseudo_age_Kn', parameters.leaf_pseudo_age_Kn)
 
-            # Current internode length
-            delta_internode_L = regul * (internode_L_Beta - prev_internode_L)
-    else:
-        delta_internode_L = 0
+                regul = Vmax / (1 + Kc / conc_sucrose) / (1 + Kn / conc_amino_acids)
+
+                # Current internode length
+                delta_internode_L = regul * (internode_L_Beta - prev_internode_L)
 
     return delta_internode_L
 
