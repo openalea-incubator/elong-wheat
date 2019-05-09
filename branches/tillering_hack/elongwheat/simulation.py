@@ -277,6 +277,12 @@ class Simulation(object):
                 else:
                     prev_leaf_emerged = True
 
+                prev2_hiddenzone_id = tuple(list(SAM_id) + [phytomer_id - 2])
+                if prev2_hiddenzone_id in all_hiddenzone_inputs:
+                    prev2_leaf_emerged = all_hiddenzone_inputs[prev2_hiddenzone_id]['leaf_is_emerged']
+                else:
+                    prev2_leaf_emerged = True
+
                 # Cumulated length of internodes up to the hidden zone
                 below_internode_lengths = all_sheath_internode_lengths[SAM_id][phytomer_id]['cumulated_internode']
                 bottom_hiddenzone_height = model.calculate_cumulated_internode_length(below_internode_lengths)
@@ -315,6 +321,13 @@ class Simulation(object):
                     if leaf_pseudostem_length < 0:
                         warnings.warn('Pseudostem length of {} decreased while leaf growing.'.format(hiddenzone_id))
 
+                    if prev2_leaf_emerged and not curr_hiddenzone_outputs['leaf_is_emerged']:
+                        curr_hiddenzone_outputs['integral_conc_sucrose_em_prec'] = model.calculate_integral_conc_sucrose(hiddenzone_inputs['integral_conc_sucrose_em_prec'],
+                                                                                                                         hiddenzone_inputs['leaf_pseudo_age'],
+                                                                                                                         curr_SAM_outputs['delta_teq'],
+                                                                                                                         hiddenzone_inputs['sucrose'],
+                                                                                                                         hiddenzone_inputs['mstruct'])
+
                     if not prev_leaf_emerged:  #: Before the emergence of the previous leaf. Exponential-like elongation.
                         # delta leaf length
                         delta_leaf_L = model.calculate_deltaL_preE(hiddenzone_inputs['sucrose'], hiddenzone_inputs['leaf_L'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'],
@@ -346,11 +359,6 @@ class Simulation(object):
                         lamina_id = hiddenzone_id + tuple(['blade', 'LeafElement1'])
                         #: Lamina has not emerged
                         if not curr_hiddenzone_outputs['leaf_is_emerged']:
-
-                            curr_hiddenzone_outputs['integral_conc_sucrose_em_prec'] = model.calculate_integral_conc_sucrose(hiddenzone_inputs['integral_conc_sucrose_em_prec'],
-                                                                                                                             hiddenzone_inputs['leaf_pseudo_age'],
-                                                                                                                             curr_SAM_outputs['delta_teq'], hiddenzone_inputs['sucrose'],
-                                                                                                                             hiddenzone_inputs['mstruct'])
 
                             #: Test of leaf emergence against distance to leaf emergence. Assumes that a leaf cannot emerge before the previous one
                             #  TODO: besoin correction pour savoir a quel pas de temps exact??

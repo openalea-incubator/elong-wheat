@@ -51,9 +51,9 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
-RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000171 , 7 : 0.00000158 , 8 : 0.00000154 , 9 : 0.00000142 , 10 : 0.0000012 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
+RERmax_dict2 =  { 5 : 0.000004 , 6 : 0.00000171 , 7 : 0.00000158 , 8 : 0.00000156 , 9 : 0.00000152 , 10 : 0.00000135 , 11 : 0.0000013 } # s-1 at 12°C fit pour pilotage par metabolisme
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
-RER_Kn = 15#40   #: affinity coefficient of RER to C N (µmol g-1)
+RER_Kn = 15   #: affinity coefficient of RER to C N (µmol g-1)
 
 # Automate elongation
 te = 300 * 3600 * 24 / 12 #: end of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
@@ -72,18 +72,17 @@ leaf_pseudo_age_Kn = 8   #: affinity coefficient of RER to C N (µmol g-1)
 
 # Leaf maximal width
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)
-EC_wmax = 0.3  #: variation de + ou - 15% de maximal leaf width (SU)
 leaf_W_L_base = 0.05
-leaf_W_L_Regul_MIN = 0.6
-leaf_W_L_Regul_MAX = 1.8
+leaf_W_L_Regul_MIN = 0.5#0.6
+leaf_W_L_Regul_MAX = 2#1.8
 leaf_W_L_int_MIN = 0
-leaf_W_L_int_MAX = 5500
+leaf_W_L_int_MAX = 4800#5500
 
 leaf_SSLW_dict = {1: 15,2: 23,3: 25,4: 24,5: 21,6: 18,7: 16,8: 18,9: 21,10: 26,11: 33} # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_dict2 = {1: 22,2: 22,3: 22,4: 22,5: 22,6: 22,7: 22,8: 24,9: 25,10: 28,11: 31} #{1: 15,2: 23,3: 25,4: 18,5: 22,6: 25,7: 20,8: 23,9: 26,10: 28,11: 31} # Test correction
 leaf_SSLW_MIN = 5
 leaf_SSLW_MAX = 45
-leaf_SSLW_integral_min = 800
+leaf_SSLW_integral_min = 500
 leaf_SSLW_integral_max = 4800
 
 leaf_LSSW_dict = {1: 0.08,2: 0.09,3: 0.11,4: 0.18,5: 0.17,6: 0.21,7: 0.24,8: 0.4,9: 0.5,10: 0.55,11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
