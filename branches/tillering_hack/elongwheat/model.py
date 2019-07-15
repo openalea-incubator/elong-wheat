@@ -428,9 +428,9 @@ def calculate_SL_ratio(phytomer_rank):
     :Returns Type:
         :class:`float`
     """
-    # res = -0.0021 * phytomer_rank ** 3 + 0.037 * phytomer_rank ** 2 - 0.1527 * phytomer_rank + 0.4962
-    SL_ratio_Ljutovac = {3 : 0.304, 4 : 0.333 , 5: 0.358, 6: 0.464, 7: 0.552, 8: 0.618, 9: 0.56, 10: 0.604, 11: 0.784}
-    res = SL_ratio_Ljutovac[phytomer_rank]
+    res = -0.0021 * phytomer_rank ** 3 + 0.037 * phytomer_rank ** 2 - 0.1527 * phytomer_rank + 0.4962
+    # SL_ratio_Ljutovac = {3 : 0.304, 4 : 0.333 , 5: 0.358, 6: 0.464, 7: 0.552, 8: 0.618, 9: 0.56, 10: 0.604, 11: 0.784}
+    # res = SL_ratio_Ljutovac[phytomer_rank]
     return res
 
 
