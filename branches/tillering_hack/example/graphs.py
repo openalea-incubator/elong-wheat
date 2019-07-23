@@ -110,34 +110,34 @@ plt.savefig( os.path.join(GRAPHS_DIRPATH, 'phyllo.png') )
 plt.close()
 
 # Comparison Ljutovac 2002
-bchmk = pd.read_csv('Ljutovac2002.csv')
-bchmk = bchmk[bchmk.metamer >= min(res.metamer) ]
-bchmk = bchmk[bchmk.metamer <= max(res.metamer)]
 
-var_list = list(bchmk.columns)
-var_list.remove('metamer')
+bchmk = pd.read_csv('Ljutovac2002.csv')
+res = all_hiddenzone_outputs_df
+res = res[(res['axis'] == 'MS') & (res['plant'] == 1) & ~np.isnan(res.leaf_Lmax)].copy()
+res_IN = res[~ np.isnan(res.internode_Lmax)]
+last_value_idx = res.groupby(['metamer'])['t_step'].transform(max) == res['t_step']
+res = res[last_value_idx].copy()
+bchmk = bchmk[bchmk.metamer >= min(res.metamer)]
+last_value_idx = res_IN.groupby(['metamer'])['t_step'].transform(max) == res_IN['t_step']
+res_IN = res_IN[last_value_idx].copy()
+res = res[['metamer', 'leaf_Lmax', 'lamina_Lmax', 'sheath_Lmax']].merge(res_IN[['metamer', 'internode_Lmax']], left_on='metamer',
+                                                                                                                      right_on='metamer', how='outer').copy()
+
+var_list = ['leaf_Lmax', 'lamina_Lmax', 'sheath_Lmax', 'internode_Lmax']
 for var in list(var_list):
     plt.figure()
-    plt.xlim((int(min(res.metamer)-1),int(max(res.metamer)+1)))
-    titi = res[var]*100*1.05
-    titi.append(bchmk[var]*1.05)
-    plt.ylim( ymin= 0 , ymax = np.nanmax( titi ) )
+    plt.xlim((int(min(res.metamer) - 1), int(max(res.metamer) + 1)))
+    plt.ylim(ymin=0, ymax=np.nanmax(list(res[var] * 100 * 1.05) + list(bchmk[var] * 1.05)))
+
     ax = plt.subplot(111)
 
-##    width = 0.35
+    tmp = res[['metamer', var]].drop_duplicates()
 
-    line1 = ax.plot(res.metamer, res[var]*100, color = 'c',  marker='o')
-    line2 = ax.plot(res.metamer, bchmk[var], color = 'orange',  marker='o')
+    line1 = ax.plot(tmp.metamer, tmp[var] * 100, color='c', marker='o')
+    line2 = ax.plot(bchmk.metamer, bchmk[var], color='orange', marker='o')
 
-##    rects1 = ax.bar(res.metamer-width, res[var]*100, width,
-##                color='c')
-##    rects2 = ax.bar(bchmk.metamer, bchmk[var], width,
-##                color='orange')
-
-##    ax.set_xlim(min(res.metamer)-2*width,max(res.metamer)+2*width)
-##    ax.set_xticks(res.metamer)
-    ax.set_ylabel(var+' (cm)')
+    ax.set_ylabel(var + ' (cm)')
     ax.set_title(var)
-    ax.legend( (line1[0], line2[0]), ('Simulation', 'Ljutovac 2002') , loc = 2)
-    plt.savefig( os.path.join(GRAPHS_DIRPATH, var + '.PNG') )
+    ax.legend((line1[0], line2[0]), ('Simulation', 'Ljutovac 2002'), loc=2)
+    plt.savefig(os.path.join(GRAPHS_DIRPATH, var + '.PNG'))
     plt.close()
