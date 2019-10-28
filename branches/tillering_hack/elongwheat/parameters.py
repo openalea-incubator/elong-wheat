@@ -51,7 +51,8 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
-RERmax_dict2_base =  { 5 : 0.000004 , 6 : 0.00000171 , 7 : 0.00000158 , 8 : 0.00000152 , 9 : 0.00000146 , 10 : 0.00000124 , 11 : 0.0000012 } # s-1 at 12°C fit pour pilotage par metabolisme
+RERmax_dict2_base =  { 5 : 0.0000025 , 6 : 0.00000166 , 7 : 0.00000158 , 8 : 0.00000152 , 9 : 0.00000146 , 10 : 0.00000124 , 11 : 0.0000012 } # s-1 at 12°C fit pour pilotage par metabolisme 6 :
+# 0.00000171 , 5 : 0.0000027
 RERmax_dict2 = dict((k, v * 1.33) for k, v in RERmax_dict2_base.items())
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to C N (µmol g-1)
@@ -67,9 +68,9 @@ OFFSET_LEAF = FITTED_L0 - L0       #: Offset used for the final fitting of the b
 SCALING_FACTOR_LEAF = 1/FITTED_L0  #: Scaling factor of the leaf in automate growth (dimensionless)
 leaf_Lmax_MAX = 0.7                #: Maximum leaf_Lmax (m)
 
-leaf_pseudo_age_Vmax = 1.25
+leaf_pseudo_age_Vmax = 1.35
 leaf_pseudo_age_Kc = 150  #: affinity coefficient of RER to C (µmol g-1)
-leaf_pseudo_age_Kn = 8   #: affinity coefficient of RER to C N (µmol g-1)
+leaf_pseudo_age_Kn = 10#8   #: affinity coefficient of RER to C N (µmol g-1)
 
 # Leaf maximal width
 leaf_Wmax_dict = { 3 : 0.0040 ,4 : 0.0045 ,5 : 0.0056 , 6 : 0.0075 , 7 : 0.010 , 8 : 0.012 , 9 : 0.013 , 10 : 0.014 , 11 : 0.018 }#: m (Ljutovac 2002)

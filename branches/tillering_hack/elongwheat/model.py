@@ -50,13 +50,14 @@ def calculate_growing_temperature(Tair, Tsol, SAM_height):
     return growth_temperature
 
 def modified_Arrhenius_equation(temperature):
-    """ Return value of equation from Johnson and Lewin (1946) for temperature. The equation is modified to return zero below zero degree.
+    """ Rate of a reaction as function of the temperature.
+    The original equation from Johnson and Lewin (1946) is modified to return zero below zero degree.
 
     :Parameters:
         - `temperature` (:class:`float`) - t (degree Celsius)
 
     :Returns:
-        Return value of Eyring equation from Johnson and Lewin (1946) for temperature. The equation is modified to return zero below zero degree.
+        Reaction rate (AU).
     :Returns Type:
         :class:`float`
     """
@@ -464,12 +465,27 @@ def calculate_sheath_Lmax(leaf_Lmax, lamina_Lmax):
     return leaf_Lmax - lamina_Lmax
 
 
-def calculate_integral_conc_sucrose( integral_conc_sucr, time_since_beg_integration, delta_teq, sucrose, mstruct ):
+def calculate_integral_conc_sucrose( prev_integral_conc_sucr, time_since_beg_integration, delta_teq, sucrose, mstruct ):
+    """ Update the integral of Sucrose concentration of the hiddenzone since time_since_beg_integration.
+
+    :Parameters:
+        - `prev_integral_conc_sucr` (:class:`float`) - integral of Sucrose concentration of the hiddenzone since time_since_beg_integration at the end of previous simulation time step (µmol C g-1).
+        - `time_since_beg_integration` (:class:`float`) - Time since when we started to integrate the sucrose concentration of the hiddenzone at the end of previous simulation time step (s at Tref).
+        - `delta_teq` (:class:`float`) - Duration of the current simulation time step (s at Tref).
+        - `sucrose` (:class:`float`) - Sucrose in the hidden zone (µmol C).
+        - `mstruct` (:class:`float`) - Mstruct of the hidden zone (g).
+    :Returns:
+        Integral of Sucrose concentration of the hiddenzone since time_since_beg_integration (µmol C g-1 mstuct)
+    :Returns Type:
+        :class:`float`
+    """
     conc_sucrose = sucrose / mstruct
+    #: Just after leaf initiation
     if time_since_beg_integration == 0:
         new_integral_conc_sucr = conc_sucrose
+    #: Else
     else :
-        new_integral_conc_sucr = (integral_conc_sucr * time_since_beg_integration + conc_sucrose * delta_teq) / (time_since_beg_integration + delta_teq)
+        new_integral_conc_sucr = (prev_integral_conc_sucr * time_since_beg_integration + conc_sucrose * delta_teq) / (time_since_beg_integration + delta_teq)
     return new_integral_conc_sucr
 
 def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, opt_croiss_fix):
