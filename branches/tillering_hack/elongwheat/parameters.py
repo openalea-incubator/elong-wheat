@@ -51,8 +51,7 @@ RERmax_dict =  { 5 : 0.000003 , 6 : 0.00000175 , 7 : 0.00000164 , 8 : 0.00000154
 # {3: 4.1E-06, 4: 4.1E-06, 5: 4.1E-06, 6: 4.1E-06, 7: 3.6E-06, 8: 3.3E-06, 9: 3.2E-06, 10: 2.9E-06, 11: 2.75E-06}
 # {5 : 0.009/3600, 6 : 0.009/3600, 7: 0.0088/3600, 8: 0.00875/3600, 9: 0.00875/3600, 10: 0.0086/3600, 11: 0.008/3600} # RB 2013
 
-RERmax_dict2_base =  { 5 : 0.0000025 , 6 : 0.00000166 , 7 : 0.00000158 , 8 : 0.00000152 , 9 : 0.00000146 , 10 : 0.00000124 , 11 : 0.0000012 } # s-1 at 12°C fit pour pilotage par metabolisme 6 :
-# 0.00000171 , 5 : 0.0000027
+RERmax_dict2_base =  { 5 : 0.0000025 , 6 : 0.00000168 , 7 : 0.00000159 , 8 : 0.00000152 , 9 : 0.00000146 , 10 : 0.00000124 , 11 : 0.0000012 } # s-1 at 12°C fit pour pilotage par metabolisme
 RERmax_dict2 = dict((k, v * 1.33) for k, v in RERmax_dict2_base.items())
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to C N (µmol g-1)
