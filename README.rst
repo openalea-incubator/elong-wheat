@@ -57,6 +57,6 @@ Contributing
 ============
 
 #. Check for open issues or open a fresh issue to start a discussion around a
-   feature idea or a bug: XXX
+   feature idea or a bug: https://sourcesup.renater.fr/tracker/?group_id=2756
 #. If you feel uncomfortable or uncertain about an issue or your changes, feel
    free to email elong-wheat@groupes.renater.fr.

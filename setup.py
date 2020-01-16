@@ -1,4 +1,11 @@
 # -*- coding: latin-1 -*-
+
+import ez_setup
+import sys
+from setuptools import setup, find_packages
+
+import elongwheat
+
 """
 Notes:
 
@@ -16,13 +23,7 @@ Notes:
         $Id$
 """
 
-import ez_setup
 ez_setup.use_setuptools()
-
-import sys
-from setuptools import setup, find_packages
-
-import elongwheat
 
 if sys.version_info < (2, 7):
     print('ERROR: Elong-Wheat requires at least Python 2.7 to run.')
@@ -32,20 +33,19 @@ if sys.version_info >= (3, 0):
     print('WARNING: Elong-Wheat has not been tested with Python 3.')
 
 setup(
-    name = "Elong-Wheat",
+    name="Elong-Wheat",
     version=elongwheat.__version__,
-    packages = find_packages(),
-
-    install_requires = ['numpy>=1.11.0', 'pandas>=0.18.0'],
-    include_package_data = True,
+    packages=find_packages(),
+    include_package_data=True,
+    install_requires=['numpy', 'pandas'],
 
     # metadata for upload to PyPI
-    author = "C.Chambon, R.Barillot",
-    author_email = "camille.chambon@grignon.inra.fr, romain.barillot@grignon.inra.fr",
-    description = "Model of leaf elongation for wheat",
-    long_description = "A mechanistic model of leaf elongation for wheat that accounts for the CN status",
-    license = "", # TODO
-    keywords = "", # TODO
-    url = "https://sourcesup.renater.fr/projects/elong-wheat/",
-    download_url = "", # TODO
+    author="M.Gauthier, C.Chambon, R.Barillot",
+    author_email="camille.chambon@inra.fr, romain.barillot@inra.fr",
+    description="Model of leaf elongation for wheat",
+    long_description="A mechanistic model of leaf elongation for wheat that accounts for the CN status",
+    license="CeCILL-C",
+    keywords="functional-structural plant model, wheat, leaf growth, morphogenesis, trophic status, carbon, nitrogen, metabolism",
+    url="https://sourcesup.renater.fr/projects/elong-wheat/",
+    download_url="https://sourcesup.renater.fr/frs/download.php/file/5704/elongwheat.zip"
 )
