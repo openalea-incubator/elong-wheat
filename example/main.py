@@ -8,6 +8,7 @@ import time
 
 from elongwheat import simulation as elongwheat_simulation, converter as elongwheat_converter
 
+
 """
     main
     ~~~~
@@ -27,9 +28,11 @@ from elongwheat import simulation as elongwheat_simulation, converter as elongwh
 # --- PREAMBLE
 
 OPTION_SHOW_ADEL = True
+OPTION_PLOT_3D_SCENE = True
+
 run_from_outputs = False
 delta_t = 3600
-loop_end = 900
+loop_end = 2500
 desired_t_step = 0
 
 # setup outup precision
@@ -42,7 +45,7 @@ GRAPHS_DIRPATH = 'graphs'
 HIDDENZONE_INPUTS_FILEPATH = os.path.join(INPUTS_DIRPATH, 'hiddenzones_inputs.csv')
 ELEMENT_INPUTS_FILEPATH = os.path.join(INPUTS_DIRPATH, 'elements_inputs.csv')
 SAM_INPUTS_FILEPATH = os.path.join(INPUTS_DIRPATH, 'SAM_inputs.csv')
-METEO_FILEPATH = os.path.join(INPUTS_DIRPATH, 'meteo_test.csv')
+METEO_FILEPATH = os.path.join(INPUTS_DIRPATH, 'meteo_Ljutovac2002.csv')
 
 # elongwheat outputs
 OUTPUTS_DIRPATH = 'outputs'
@@ -99,7 +102,7 @@ if not run_from_outputs:
 elongwheat_ts = 1
 
 # --- ADEL
-if OPTION_SHOW_ADEL:
+if OPTION_SHOW_ADEL or OPTION_PLOT_3D_SCENE:
     from fspmwheat import elongwheat_facade
     from alinea.adel.adel_dynamic import AdelDyn
     from alinea.adel.echap_leaf import echap_leaves
@@ -117,6 +120,14 @@ if OPTION_SHOW_ADEL:
     adel_wheat.update_geometry(g)
     adel_wheat.plot(g)
 
+if OPTION_PLOT_3D_SCENE:
+    from fspmwheat import caribu_facade
+
+    shared_elements_inputs_outputs_df = pd.DataFrame()
+    caribu_facade_ = caribu_facade.CaribuFacade(g,
+                                                shared_elements_inputs_outputs_df,
+                                                adel_wheat)
+
 # --- SETUP RUN
 
 # --- MAIN
@@ -131,6 +142,10 @@ start_time = time.time()
 for t_step in range(desired_t_step + 1, loop_end + 1, elongwheat_ts):
 
     print(t_step)
+
+    if OPTION_PLOT_3D_SCENE and (t_step % 4 == 0):
+        caribu_facade_.run(run_caribu=True, sun_sky_option='sky', heterogeneous_canopy=True,
+                           plant_density=250, plot_3D_scene=True, t_caribu=t_step)
 
     # convert the dataframe to simulation inputs format
     inputs = elongwheat_converter.from_dataframes(hiddenzone_inputs_df, element_inputs_df, SAM_inputs_df)
@@ -151,7 +166,12 @@ for t_step in range(desired_t_step + 1, loop_end + 1, elongwheat_ts):
     if OPTION_SHOW_ADEL:
         elongwheat_facade_._update_shared_MTG(simulation_.outputs['hiddenzone'], simulation_.outputs['elements'], simulation_.outputs['SAM'])
         adel_wheat.update_geometry(g)
-        adel_wheat.plot(g)
+        if not OPTION_PLOT_3D_SCENE:
+            adel_wheat.plot(g)
+
+            from openalea.plantgl.all import Scene as pglScene, Viewer
+            Viewer.camera.setPosition([0, 1, 0])
+            Viewer.frameGL.saveImage('video/plant_{}.png'.format(t_step))
 
     # use output as input for the next step
     hiddenzone_inputs_df, element_inputs_df, SAM_inputs_df = hiddenzone_outputs_df, element_outputs_df, SAM_outputs_df
