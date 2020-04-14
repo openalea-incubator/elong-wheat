@@ -84,35 +84,35 @@ def cropping_resizing_and_film_making(cropping=False, resizing=False, framing=Tr
             filenames = Path('video_adjusted').glob('*.png')
             filenames = sorted(filenames)
 
-            # We add a frame to the images:
-            print "Adding frame to the images..."
-            count = 0
-            remaining_images = number_of_images
+        # We add a frame to the images:
+        print "Adding frame to the images..."
+        count = 0
+        remaining_images = number_of_images
 
-            # We cover each image in the directory:
-            for filename in filenames:
-                # The count is increased:
-                count += 1
-                # If it corresponds to the target number, the image is added to the gif:
-                if count == sampling_frequency:
-                    print "Please wait:", str(int(remaining_images)), "image(s) left"
+        # We cover each image in the directory:
+        for filename in filenames:
+            # The count is increased:
+            count += 1
+            # If it corresponds to the target number, the image is added to the gif:
+            if count == sampling_frequency:
+                print "Please wait:", str(int(remaining_images)), "image(s) left"
 
-                    simulation_time = int(filename[:-4][-4:])
+                simulation_time = int(filename[:-4][-4:])
 
-                    im = PIL.Image.open(filename)
-                    # Frame
-                    im_framed = PIL.ImageOps.expand(im, border=(0, 0, 0, 50), fill='white')
-                    # Display simulation time
-                    width, height = im.size
-                    im_framed2 = PIL.ImageDraw.Draw(im)
-                    im_framed2.text((10, height - 10), 't = %.4d h' % simulation_time, fill=(255,255,255))
-                    # Save
-                    image_name = os.path.join(video_dir, 'adjusted_image_%.4d.png')
-                    im_framed.save(image_name % simulation_time)
-                    remaining_images = remaining_images - 1
-                    # We reset the count to 0:
-                    count = 0
-            print "The frames have been added!"
+                im = PIL.Image.open(filename)
+                # Frame
+                im_framed = PIL.ImageOps.expand(im, border=(0, 0, 0, 50), fill='white')
+                # Display simulation time
+                width, height = im.size
+                im_framed2 = PIL.ImageDraw.Draw(im)
+                im_framed2.text((10, height - 10), 't = %.4d h' % simulation_time, fill=(255,255,255))
+                # Save
+                image_name = os.path.join(video_dir, 'adjusted_image_%.4d.png')
+                im_framed.save(image_name % simulation_time)
+                remaining_images = remaining_images - 1
+                # We reset the count to 0:
+                count = 0
+        print "The frames have been added!"
 
     # 3. COMPRESSING THE IMAGES:
     if resizing:
@@ -182,5 +182,5 @@ def cropping_resizing_and_film_making(cropping=False, resizing=False, framing=Tr
 
 
 if __name__ == '__main__':
-    cropping_resizing_and_film_making(cropping=True, cropping_area=(200, 110, 550, 440), film_making=True,
-                                      original_images_directory='video', film_directory='video_adjusted', sampling_frequency=1)
+    cropping_resizing_and_film_making(cropping=True, framing=True, cropping_area=(200, 110, 550, 440), film_making=False,
+                                      original_images_directory='video', film_directory='video_adjusted', sampling_frequency=500)
