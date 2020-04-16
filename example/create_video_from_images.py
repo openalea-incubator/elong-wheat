@@ -7,7 +7,7 @@ from path import Path
 from math import floor
 
 
-# -- Pour enregistrer les images de PlantGL
+# -- To save images from PlantGL
 # from openalea.plantgl.all import Scene as pglScene, Viewer
 # c_scene_sky.plot() # =PARa_sky, minval=0., maxval=700.)
 # Viewer.camera.setPosition([0, 1, 0])

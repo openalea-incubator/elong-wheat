@@ -1,8 +1,8 @@
 # -*- coding: latin-1 -*-
 
 from __future__ import division  # use "//" to do integer division
-import pandas as pd
 
+import pandas as pd
 import simulation
 
 """
@@ -16,16 +16,6 @@ import simulation
     :license: see LICENSE for details.
 
 """
-
-"""
-    Information about this versioned file:
-        $LastChangedBy$
-        $LastChangedDate$
-        $LastChangedRevision$
-        $URL$
-        $Id$
-"""
-
 
 #: the columns which define the topology in the input/output dataframe
 HIDDENZONE_TOPOLOGY_COLUMNS = ['plant', 'axis', 'metamer']
@@ -67,7 +57,7 @@ def from_dataframes(hiddenzone_inputs, element_inputs, SAM_inputs):
         # Complete dict of lengths
         all_length_dict[SAM_inputs_id] = {}
         for i in range(SAM_inputs_dict['nb_leaves']):
-            all_length_dict[SAM_inputs_id][i+1] = {'sheath': [], 'cumulated_internode': []}
+            all_length_dict[SAM_inputs_id][i + 1] = {'sheath': [], 'cumulated_internode': []}
         cumulated_internode_length[SAM_inputs_id] = []
 
     for element_inputs_id, element_inputs_group in sorted(element_inputs.groupby(ELEMENT_TOPOLOGY_COLUMNS)):
@@ -122,7 +112,6 @@ def to_dataframes(data_dict):
     for (current_key, current_topology_columns, current_outputs_names) in (('hiddenzone', HIDDENZONE_TOPOLOGY_COLUMNS, simulation.HIDDENZONE_OUTPUTS),
                                                                            ('elements', ELEMENT_TOPOLOGY_COLUMNS, simulation.ELEMENT_OUTPUTS),
                                                                            ('SAM', SAM_TOPOLOGY_COLUMNS, simulation.SAM_OUTPUTS)):
-
         current_data_dict = data_dict[current_key]
         current_ids_df = pd.DataFrame(current_data_dict.keys(), columns=current_topology_columns)
         current_data_df = pd.DataFrame(current_data_dict.values())
