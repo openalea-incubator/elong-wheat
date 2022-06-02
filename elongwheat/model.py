@@ -21,18 +21,19 @@ from math import exp, log10
 # -------------------------------------------------------------------------------------------------------------------
 
 
-def calculate_growing_temperature(Tair, Tsol, SAM_height):
+def calculate_growing_temperature(Tair, Tsol, SAM_height, sowing_depth):
     """ Return temperature to be used for growth zone
 
     :param float Tair: Air temperature at t (degree Celsius)
     :param float Tsol: Soil temperature at t (degree Celsius)
-    :param float SAM_height: Height of SAM, calculated from internode length (m).
+    :param float SAM_height: Height of SAM, calculated from internode length (m)
+        :param float sowing_depth: Sowing depth (m)
 
     :return: Return temperature to be used for growth zone at t (degree Celsius)
     :rtype: float
     """
 
-    if SAM_height > parameters.sowing_depth:
+    if SAM_height > sowing_depth:
         growth_temperature = Tair
     else:
         growth_temperature = Tsol
@@ -159,6 +160,10 @@ def calculate_ligule_height(sheath_internode_length, all_element_inputs, SAM_id,
             ligule_height_df = pd.DataFrame([(SAM_id, phytomer_id, ligule_height)], columns=list(all_ligule_height_df))
             all_ligule_height_df = pd.concat((all_ligule_height_df, ligule_height_df))
 
+        elif phytomer_id == 0:  # Coleoptile
+            coleoptile_length_df = pd.DataFrame([(SAM_id, phytomer_id, sheath_internode_length[phytomer_id]['sheath'][0])], columns=list(all_ligule_height_df))
+            all_ligule_height_df = pd.concat((all_ligule_height_df, coleoptile_length_df))
+
     return all_ligule_height_df
 
 
@@ -192,17 +197,19 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
     :return: delta delta_leaf_L (m)
     :rtype: float
     """
+    # RER_max = parameters.RERmax_Ljutovac_fit.get(leaf_rank, parameters.RERmax_Ljutovac_fit[max(parameters.RERmax_Ljutovac_fit.keys())])
+    # delta_leaf_L = leaf_L * RER_max * delta_teq
+
     conc_sucrose_effective = max(0., sucrose / mstruct - parameters.conc_sucrose_offset)
 
-    if conc_sucrose_effective > 0 and amino_acids > 0:
-        if optimal_growth_option:
-            RER_max = parameters.RERmax_Ljutovac_fit.get(leaf_rank, parameters.RERmax_Ljutovac_fit[max(parameters.RERmax_Ljutovac_fit.keys())])
-            delta_leaf_L = leaf_L * RER_max * delta_teq
-        else:
-            RER_max = parameters.RERmax.get(leaf_rank, parameters.RERmax[max(parameters.RERmax.keys())])
-            # Enzymatic rate for bi-substrats with random fixation
-            conc_amino_acids = (amino_acids / mstruct)
-            delta_leaf_L = delta_teq * leaf_L * RER_max / ( (1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) )
+    if optimal_growth_option:
+        RER_max = parameters.RERmax_Ljutovac_fit.get(leaf_rank, parameters.RERmax_Ljutovac_fit[max(parameters.RERmax_Ljutovac_fit.keys())])
+        delta_leaf_L = leaf_L * RER_max * delta_teq
+    elif conc_sucrose_effective > 0 and amino_acids > 0:
+        RER_max = parameters.RERmax.get(leaf_rank, parameters.RERmax[max(parameters.RERmax.keys())])
+        # Enzymatic rate for bi-substrats with random fixation
+        conc_amino_acids = (amino_acids / mstruct)
+        delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids))
     else:
         delta_leaf_L = 0
 
@@ -250,27 +257,27 @@ def calculate_deltaL_postE(prev_leaf_pseudo_age, leaf_pseudo_age, prev_leaf_L, l
     :return: delta_leaf_L (m)
     :rtype: float
     """
+
     conc_sucrose_effective = max(0., sucrose / mstruct - parameters.conc_sucrose_offset)
 
-    if conc_sucrose_effective > 0 and amino_acids > 0:
-        if leaf_pseudo_age <= parameters.tb:
-            delta_leaf_L = prev_leaf_L - Beta_function(0.) * leaf_Lmax
-        elif leaf_pseudo_age < parameters.te:
-            # Beta function
-            delta_leaf_L_Beta_0 = min(leaf_Lmax, leaf_Lmax * (Beta_function(leaf_pseudo_age) - Beta_function(prev_leaf_pseudo_age)))
+    if leaf_pseudo_age <= parameters.tb and conc_sucrose_effective > 0 and amino_acids > 0:
+        delta_leaf_L = prev_leaf_L - Beta_function(0.) * leaf_Lmax
+    elif leaf_pseudo_age < parameters.te:
+        # Beta function
+        delta_leaf_L_Beta_0 = min(leaf_Lmax, leaf_Lmax * (Beta_function(leaf_pseudo_age) - Beta_function(prev_leaf_pseudo_age)))
 
-            if optimal_growth_option:
-                # Current leaf length
-                delta_leaf_L = delta_leaf_L_Beta_0
-            else:
-                # Regulation by C and N
-                conc_amino_acids = amino_acids / mstruct
-                regul = parameters.leaf_pseudo_age_Vmax / (1 + parameters.leaf_pseudo_age_Kc / conc_sucrose_effective) / (1 + parameters.leaf_pseudo_age_Kn / conc_amino_acids)
-                # Actual leaf elongation
-                delta_leaf_L = delta_leaf_L_Beta_0 * regul
-        else:  # end of leaf elongation
+        if optimal_growth_option:
+            # Current leaf length
+            delta_leaf_L = delta_leaf_L_Beta_0
+        elif conc_sucrose_effective > 0 and amino_acids > 0:
+            # Regulation by C and N
+            conc_amino_acids = amino_acids / mstruct
+            regul = parameters.leaf_pseudo_age_Vmax / (1 + parameters.leaf_pseudo_age_Kc / conc_sucrose_effective) / (1 + parameters.leaf_pseudo_age_Kn / conc_amino_acids)
+            # Actual leaf elongation
+            delta_leaf_L = delta_leaf_L_Beta_0 * regul
+        else:  # empty sucrose or amino acids
             delta_leaf_L = 0
-    else:  # empty sucrose or amino acids
+    else:  # end of leaf elongation or empty sucrose or amino acids
         delta_leaf_L = 0
 
     return max(0., delta_leaf_L)
@@ -331,20 +338,17 @@ def calculate_leaf_emergence(leaf_L, leaf_pseudostem_length):
     return leaf_L > leaf_pseudostem_length
 
 
-def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id, lamina_Lmax):
+def calculate_lamina_L(leaf_L, leaf_pseudostem_length, lamina_Lmax):
     """ Emerged lamina length given by the difference between leaf length and leaf pseudostem length.
 
     :param float leaf_L: Total leaf length (m)
     :param float leaf_pseudostem_length: Length of the pseudostem (m)
-    :param tuple hiddenzone_id: Id of the hidden zone (plant_id, axis_id, phytomer_id)
     :param float lamina_Lmax: Final lamina length (m)
 
     :return: lamina length (m)
     :rtype: float
     """
     lamina_L = leaf_L - leaf_pseudostem_length
-    # if lamina_L <= 0:
-    #     raise Warning('The leaf is shorther than its pseudostem for {}'.format(hiddenzone_id))
 
     return max(10 ** -5,
                min(lamina_L, lamina_Lmax))  # Minimum length set to 10^-6 m to make sure growth-wheat can run even if the lamina turns back hidden (case when an older sheath elongates faster)
@@ -459,7 +463,7 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     if optimal_growth_option:
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
-        SSLW = (parameters.leaf_SSLW_a*integral_conc_sucr)/(parameters.leaf_SSLW_b + integral_conc_sucr)
+        SSLW = (parameters.leaf_SSLW_a * integral_conc_sucr) / (parameters.leaf_SSLW_b + integral_conc_sucr)
 
     return max(min(SSLW, SSLW_max), SSLW_min)
 
@@ -610,19 +614,21 @@ def calculate_delta_internode_L_preL(phytomer_rank, sucrose, internode_L, amino_
     :return: delta delta_internode_L (m)
     :rtype: float
     """
+
     conc_sucrose_effective = max(0., sucrose / mstruct - parameters.conc_sucrose_offset)
 
-    if conc_sucrose_effective > 0 and amino_acids > 0:
-        if optimal_growth_option:
-            RER_max = parameters.RERmax_dict_IN.get(phytomer_rank, parameters.RERmax_dict_IN[max(parameters.RERmax_dict_IN.keys())])
-            delta_internode_L = internode_L * RER_max * delta_teq
-        else:  # TODO: not tested yet
+    if optimal_growth_option:
+        RER_max = parameters.RERmax_dict_IN.get(phytomer_rank, parameters.RERmax_dict_IN[max(parameters.RERmax_dict_IN.keys())])
+        delta_internode_L = internode_L * RER_max * delta_teq
+
+    else:
+        if conc_sucrose_effective > 0 and amino_acids > 0:
             RER_max = parameters.RERmax_dict_IN.get(phytomer_rank, parameters.RERmax_dict_IN[max(parameters.RERmax_dict_IN.keys())])
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
             delta_internode_L = internode_L * RER_max * delta_teq / (1 + parameters.RER_Kc / conc_sucrose_effective) / (1 + parameters.RER_Kn / conc_amino_acids)
-    else:
-        delta_internode_L = 0
+        else:
+            delta_internode_L = 0
 
     return delta_internode_L
 
@@ -686,23 +692,21 @@ def calculate_delta_internode_L_postL(prev_internode_pseudo_age, internode_pseud
     """
     conc_sucrose_effective = max(0., sucrose / mstruct - parameters.conc_sucrose_offset)
 
-    if conc_sucrose_effective > 0 and amino_acids > 0:
-        if internode_pseudo_age <= parameters.tb_IN:
-            delta_internode_L = prev_internode_L - Beta_function_internode(0.) * internode_Lmax_lig
-        elif internode_pseudo_age < parameters.te_IN:
-            # Beta function
-            delta_internode_L_Beta_0 = min(internode_Lmax_lig, internode_Lmax_lig * (Beta_function_internode(internode_pseudo_age) - Beta_function_internode(prev_internode_pseudo_age)))
+    if internode_pseudo_age <= parameters.tb_IN and conc_sucrose_effective > 0 and amino_acids > 0:
+        delta_internode_L = prev_internode_L - Beta_function_internode(0.) * internode_Lmax_lig
+    elif internode_pseudo_age < parameters.te_IN:
+        # Beta function
+        delta_internode_L_Beta_0 = min(internode_Lmax_lig, internode_Lmax_lig * (Beta_function_internode(internode_pseudo_age) - Beta_function_internode(prev_internode_pseudo_age)))
 
-            if optimal_growth_option:
-                # Current internode length
-                delta_internode_L = delta_internode_L_Beta_0
-            else:  # TODO: not tested yet
-                # Regulation by C and N
-                conc_amino_acids = amino_acids / mstruct
-                regul = parameters.leaf_pseudo_age_Vmax / (1 + parameters.leaf_pseudo_age_Kc / conc_sucrose_effective) / (1 + parameters.leaf_pseudo_age_Kn / conc_amino_acids)
-
-                # Current internode length
-                delta_internode_L = regul * delta_internode_L_Beta_0
+        if optimal_growth_option:
+            # Current internode length
+            delta_internode_L = delta_internode_L_Beta_0
+        elif conc_sucrose_effective > 0 and amino_acids > 0:  # TODO: not tested yet
+            # Regulation by C and N
+            conc_amino_acids = amino_acids / mstruct
+            regul = parameters.leaf_pseudo_age_Vmax / (1 + parameters.leaf_pseudo_age_Kc / conc_sucrose_effective) / (1 + parameters.leaf_pseudo_age_Kn / conc_amino_acids)
+            # Current internode length
+            delta_internode_L = regul * delta_internode_L_Beta_0
         else:
             delta_internode_L = 0
     else:
@@ -763,3 +767,41 @@ def calculate_end_internode_elongation(internode_L, internode_Lmax, internode_ps
     if internode_Lmax:
         condition_B = (internode_L >= internode_Lmax)
     return condition_A or condition_B
+
+
+# -------------------
+# --- COLEOPTILES ---
+# -------------------
+def calculate_coleo_Lmax(sowing_depth):
+    """Calculate final length of coleoptile from sowing depth
+
+    :param float sowing_depth: Sowing depth (m)
+
+    :return: final length of coleoptile
+    :rtype: float
+    """
+    return sowing_depth + parameters.delta_L_emergence
+
+
+def calculate_coleoptile_emergence(coleoptile_L, sowing_depth):
+    """Calculate if a given coleoptile has emerged above the soil
+
+    :param float coleoptile_L: Coleoptile length (m)
+    :param float sowing_depth: Sowing depth (m)
+
+    :return: Specifies if the coleoptile has emerged (True) or not (False)
+    :rtype: bool
+    """
+    return coleoptile_L > sowing_depth
+
+
+def calculate_emerged_coleo_L(coleoptile_L, sowing_depth):
+    """Calculate coleoptile length emerged above the soil
+
+    :param float coleoptile_L: Coleoptile length (m)
+    :param float sowing_depth: Sowing depth (m)
+
+    :return: Visible coleotpile length (m)
+    :rtype: float
+    """
+    return coleoptile_L - sowing_depth

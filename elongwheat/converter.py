@@ -49,6 +49,9 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
     emerging_element_inputs_columns = element_inputs.columns.difference(ELEMENT_TOPOLOGY_COLUMNS)
     axis_inputs_columns = axis_inputs.columns.difference(AXIS_TOPOLOGY_COLUMNS)
 
+    grouped_hiddenzone_inputs = sorted(hiddenzone_inputs.groupby(HIDDENZONE_TOPOLOGY_COLUMNS))
+    grouped_element_inputs = sorted(element_inputs.groupby(ELEMENT_TOPOLOGY_COLUMNS))
+
     for axis_inputs_id, axis_inputs_group in axis_inputs.groupby(AXIS_TOPOLOGY_COLUMNS):
         # Axis
         axis_inputs_series = axis_inputs_group.loc[axis_inputs_group.first_valid_index()]
@@ -58,9 +61,16 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
         all_length_dict[axis_inputs_id] = {}
         for i in range(axis_inputs_dict['nb_leaves']):
             all_length_dict[axis_inputs_id][i+1] = {'sheath': [], 'cumulated_internode': []}
+        # For coleoptile
+        if grouped_hiddenzone_inputs[0][0] == axis_inputs_id + (0,):
+            all_length_dict[axis_inputs_id][0] = {'sheath': [], 'cumulated_internode': []}
+
+        elif grouped_element_inputs[0][0][:4] == axis_inputs_id + (0, 'sheath'):
+            all_length_dict[axis_inputs_id][0] = {'sheath': [], 'cumulated_internode': []}
+
         cumulated_internode_length[axis_inputs_id] = []
 
-    for element_inputs_id, element_inputs_group in sorted(element_inputs.groupby(ELEMENT_TOPOLOGY_COLUMNS)):
+    for element_inputs_id, element_inputs_group in grouped_element_inputs:
         # Elements
         element_inputs_series = element_inputs_group.loc[element_inputs_group.first_valid_index()]
         element_inputs_dict = element_inputs_series[emerging_element_inputs_columns].to_dict()
@@ -76,7 +86,7 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
             else:  # only the last internode length is written (case of organs with hidden and visible part)
                 all_length_dict[axis_id][phytomer_id]['cumulated_internode'].append(element_inputs_dict['length'])
 
-    for hiddenzone_inputs_id, hiddenzone_inputs_group in sorted(hiddenzone_inputs.groupby(HIDDENZONE_TOPOLOGY_COLUMNS)):
+    for hiddenzone_inputs_id, hiddenzone_inputs_group in grouped_hiddenzone_inputs:
         # hiddenzone
         hiddenzone_inputs_series = hiddenzone_inputs_group.loc[hiddenzone_inputs_group.first_valid_index()]
         hiddenzone_inputs_dict = hiddenzone_inputs_series[hiddenzone_inputs_columns].to_dict()
@@ -84,6 +94,10 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
         # Complete dict of  length
         axis_id = hiddenzone_inputs_id[:2]
         phytomer_id = hiddenzone_inputs_id[2]
+        # Not emerged coleoptile
+        if phytomer_id == 0:
+            all_length_dict[axis_id][phytomer_id]['sheath'].append(hiddenzone_inputs_dict['leaf_L'])
+
         if hiddenzone_inputs_dict['leaf_is_emerged'] and hiddenzone_inputs_dict['leaf_is_growing']:
             growing_sheath_length = max(0, hiddenzone_inputs_dict['leaf_L'] - hiddenzone_inputs_dict['lamina_Lmax'])  # TODO mettre ce calcul ailleurs certainement.
             all_length_dict[axis_id][phytomer_id]['sheath'].append(growing_sheath_length)

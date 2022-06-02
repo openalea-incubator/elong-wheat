@@ -20,8 +20,6 @@ PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated fro
 max_nb_leaves = 11   #: Max number of leaves per axis
 delta_TT_GA = PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
-sowing_depth = 0.05  #: Sowing depth (m) used to define plant emergence
-
 # Parameters for temperature responses
 Temp_Tref = 12        # Arbitrary reference temperature (°C)
 Temp_Ea_R = 8900      # Parameter Ea/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
@@ -35,9 +33,9 @@ Temp_Ttransition = 9  # Below this temperature f = linear function of temperatur
 conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and internode growth occurs (µmol of C g-1 mstruct) - same for root growth, see growthwheat
 
 # Exponential elongation
-RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154, 9: 0.00000151, 10: 0.00000134, 11: 0.00000129} # Optimal RERmax (s-1 at 12°C) allowing to simulate leaf dimensions of Ljutovac (2002)
+RERmax_Ljutovac_fit = {2: 1.75e-06, 3: 1.47e-06, 4: 1.6e-06, 5: 1.47e-06, 6: 1.47e-06, 7: 1.45e-06, 8: 1.425e-06, 9: 1.4e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
-RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {2: 1.75e-06, 3: 1.75e-06, 4: 1.75e-06, 5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
@@ -53,7 +51,7 @@ leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
 leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
 
 # Leaf maximal width  TODO doc
-leaf_Wmax_dict = {3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
 leaf_W_L_MIN = 0.025  #: Minimal leaf width
 leaf_W_L_a = -0.02033728
 leaf_W_L_b = -0.00005445836
@@ -84,9 +82,9 @@ SL_ratio_d = 0.4962
 # Ratio of leaf length composed by the division zone.
 # Parameters are used for an inverse beta function representing the ratio of the leaf composed by the division zone accoring to its relative length in log.
 # The model was fitted on litterature data on wheat (Fournier 2005, Beemster and Masle 1996, Schuppler 1998).
-ratio_DZ_l_init = 0.065     #: normalized log of leaf length at which the the leaf is fully composed by the division zone (dimensionless).
+ratio_DZ_l_init = 0.065     #: normalized log of leaf length at which the leaf is fully composed by the division zone (dimensionless).
 ratio_DZ_l_mid = 0.075      #: intermediate point of the beta function (dimensionless).
-ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the the leaf has no more division zone (dimensionless).
+ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the leaf has no more division zone (dimensionless).
 
 # -------------------------------------------------------------------------------------------------------------------
 # --- Internodes
@@ -113,7 +111,13 @@ tm_IN = 252.7798 * 3600 * 24 / 12  #: time at which internode elongation rate is
 tb_IN = -374.2918 * 3600 * 24 / 12  #: beginning of internode elongation in automate growth (s);Ljutovac 2002, 250pl.m-2
 
 ratio_LSIW_LSSW = 2.5  #: ratio lineic structural internode mass / lineic structural sheath mass  of the specific structural dry masses (from data of J. Bertheloot, 2004)
-internode_LSIW_dict = {1: 2.8, 2: 2.8, 3: 2.8, 4: 2.8, 5: 2.8, 6: 2.8, 7: 2.8, 8: 2.8, 9: 2.3, 10: 1.7, 11: 1.6, 12: 1.4, 13: 0.7}  #: experiment of M.Gauthier 2017/18, consistent with that of R.Barillot 2014
+internode_LSIW_dict = {1: 2.8, 2: 2.8, 3: 2.8, 4: 2.8, 5: 2.8, 6: 2.8, 7: 2.8, 8: 2.8, 9: 2.3, 10: 1.7, 11: 1.6, 12: 1.4, 13: 0.7}  #: experiment of M.Gauthier 2017/18, consistent with R.Barillot 2014
+
+
+# -------------------------------------------------------------------------------------------------------------------
+# --- Coleoptiles
+# -------------------------------------------------------------------------------------------------------------------
+delta_L_emergence = 0.028  #: length of visible coleoptile, emerged from soil (m). Current value set allows coleo to match sheath 1 length in Sreten.
 
 
 class HiddenZoneInit(object):

@@ -29,7 +29,7 @@ from elongwheat import simulation as elongwheat_simulation, converter as elongwh
 OPTION_SHOW_ADEL = False
 run_from_outputs = False
 delta_t = 3600
-loop_end = 900
+loop_end = 4000
 desired_t_step = 0
 
 # setup outup precision
@@ -42,7 +42,8 @@ GRAPHS_DIRPATH = 'graphs'
 HIDDENZONE_INPUTS_FILEPATH = os.path.join(INPUTS_DIRPATH, 'hiddenzones_inputs.csv')
 ELEMENT_INPUTS_FILEPATH = os.path.join(INPUTS_DIRPATH, 'elements_inputs.csv')
 AXIS_INPUTS_FILEPATH = os.path.join(INPUTS_DIRPATH, 'axes_inputs.csv')
-METEO_FILEPATH = os.path.join(INPUTS_DIRPATH, 'meteo_test.csv')
+METEO_FILEPATH = os.path.join(INPUTS_DIRPATH, 'meteo_Ljutovac2002_since_sowing_on_19981015.csv')
+MANAGEMENT_FILEPATH = os.path.join(INPUTS_DIRPATH, 'management.csv')
 
 # elongwheat outputs
 OUTPUTS_DIRPATH = 'outputs'
@@ -63,9 +64,9 @@ if run_from_outputs:
     SAM_inputs_desired_t = pd.read_csv(AXIS_OUTPUTS_FILEPATH)
 
     # Convert NaN to None
-    hiddenzones_inputs_desired_t = hiddenzones_inputs_desired_t.where(hiddenzones_inputs_desired_t.notnull(), None).copy(deep=True)
-    element_inputs_desired_t = element_inputs_desired_t.where(element_inputs_desired_t.notnull(), None).copy(deep=True)
-    SAM_inputs_desired_t = SAM_inputs_desired_t.where(SAM_inputs_desired_t.notnull(), None).copy(deep=True)
+    hiddenzones_inputs_desired_t = hiddenzones_inputs_desired_t.replace({np.nan: None}).copy(deep=True)
+    element_inputs_desired_t = element_inputs_desired_t.replace({np.nan: None}).copy(deep=True)
+    SAM_inputs_desired_t = SAM_inputs_desired_t.replace({np.nan: None}).copy(deep=True)
 
     assert 't_step' in hiddenzones_inputs_desired_t.columns
     if np.isnan(desired_t_step) or desired_t_step == 0:
@@ -90,9 +91,9 @@ else:
     axis_inputs_df = axis_inputs_df.where(axis_inputs_df.notnull(), None).copy(deep=True)
 
     inputs = elongwheat_converter.from_dataframes(hiddenzone_inputs_df, element_inputs_df, axis_inputs_df)
-    desired_t_step = 0
 
 meteo = pd.read_csv(METEO_FILEPATH, index_col='t')
+management = pd.read_csv(MANAGEMENT_FILEPATH, header=None, index_col=0, squeeze=True)
 
 # Write first line of dfs with input values
 hiddenzone_outputs_df, element_outputs_df, axis_outputs_df = elongwheat_converter.to_dataframes(inputs)
@@ -112,7 +113,9 @@ elongwheat_ts = 1
 # --- ADEL
 if OPTION_SHOW_ADEL:
     from fspmwheat import elongwheat_facade
+    # noinspection PyUnresolvedReferences
     from alinea.adel.adel_dynamic import AdelDyn
+    # noinspection PyUnresolvedReferences
     from alinea.adel.echap_leaf import echap_leaves
 
     # adelwheat inputs at t0
@@ -140,7 +143,6 @@ start_time = time.time()
 
 # Loop for several runs
 for t_step in range(desired_t_step + 1, loop_end + 1, elongwheat_ts):
-
     print(t_step)
 
     # convert the dataframe to simulation inputs format
@@ -149,11 +151,12 @@ for t_step in range(desired_t_step + 1, loop_end + 1, elongwheat_ts):
     # initialize the simulation with the inputs
     simulation_.initialize(inputs)
 
-    # Temperature
+    # Temperature and sowing depth
     Tair, Tsoil = meteo.loc[t_step, ['air_temperature', 'soil_temperature']]
+    Zsowing = float(management.sowing_depth)
 
     # run the simulation
-    simulation_.run(Tair=Tair, Tsoil=Tsoil, optimal_growth_option=True)
+    simulation_.run(Tair=Tair, Tsoil=Tsoil, Zsowing=Zsowing, optimal_growth_option=True)
 
     # convert the outputs to Pandas dataframe
     hiddenzone_outputs_df, element_outputs_df, axis_outputs_df = elongwheat_converter.to_dataframes(simulation_.outputs)
@@ -190,4 +193,4 @@ all_axes_outputs_df.to_csv(AXIS_OUTPUTS_FILEPATH, index=False, na_rep='NA', floa
 print("--- %s seconds ---" % (time.time() - start_time))
 
 # --- GRAPHS
-os.system("graphs.py")
+exec(open("graphs.py").read())
