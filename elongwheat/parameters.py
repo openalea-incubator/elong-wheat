@@ -35,7 +35,7 @@ conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and inte
 # Exponential elongation
 RERmax_Ljutovac_fit = {2: 1.75e-06, 3: 1.47e-06, 4: 1.6e-06, 5: 1.47e-06, 6: 1.47e-06, 7: 1.45e-06, 8: 1.425e-06, 9: 1.4e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
-RERmax = {2: 1.75e-06, 3: 1.75e-06, 4: 1.75e-06, 5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {2: 2.05e-06, 3: 2.05e-06, 4: 3.5e-06, 5: 3.45e-06, 6: 3.45e-06, 7: 3e-06, 8: 2.45e-06, 9: 2.4e-06, 10: 2.25e-06, 11: 2.25e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
@@ -58,12 +58,12 @@ leaf_W_L_b = -0.00005445836
 leaf_W_L_c = 0.000459551
 
 # Structural Specific Lamina Weight
-leaf_SSLW = {1: 22, 2: 22, 3: 22, 4: 22, 5: 22, 6: 22, 7: 22, 8: 24, 9: 25, 10: 28, 11: 31}  # SSLW (g m-2)
+leaf_SSLW = {1: 15, 2: 23, 3: 22, 4: 22, 5: 22, 6: 22, 7: 22, 8: 24, 9: 25, 10: 28, 11: 31}  # SSLW (g m-2)
 leaf_SSLW_NEMA = {1: 15, 2: 23, 3: 25, 4: 24, 5: 21, 6: 18, 7: 16, 8: 18, 9: 21, 10: 26, 11: 33}  # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_MIN = 5.
 leaf_SSLW_MAX = 45.
-leaf_SSLW_a = 47.50516
-leaf_SSLW_b = 2927.944
+leaf_SSLW_a = 47.50516  # g m-2
+leaf_SSLW_b = 2927.944  # µmol C g-1
 
 leaf_LSSW_dict = {1: 0.08, 2: 0.09, 3: 0.11, 4: 0.18, 5: 0.17, 6: 0.21, 7: 0.24, 8: 0.4, 9: 0.5, 10: 0.55, 11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
 leaf_LSSW_a = 0.00005

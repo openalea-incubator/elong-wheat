@@ -49,8 +49,8 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
     emerging_element_inputs_columns = element_inputs.columns.difference(ELEMENT_TOPOLOGY_COLUMNS)
     axis_inputs_columns = axis_inputs.columns.difference(AXIS_TOPOLOGY_COLUMNS)
 
-    grouped_hiddenzone_inputs = sorted(hiddenzone_inputs.groupby(HIDDENZONE_TOPOLOGY_COLUMNS))
-    grouped_element_inputs = sorted(element_inputs.groupby(ELEMENT_TOPOLOGY_COLUMNS))
+    grouped_hiddenzone_inputs = hiddenzone_inputs.groupby(HIDDENZONE_TOPOLOGY_COLUMNS, sort=True)
+    grouped_element_inputs = element_inputs.groupby(ELEMENT_TOPOLOGY_COLUMNS, sort=True)
 
     for axis_inputs_id, axis_inputs_group in axis_inputs.groupby(AXIS_TOPOLOGY_COLUMNS):
         # Axis
@@ -62,10 +62,10 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
         for i in range(axis_inputs_dict['nb_leaves']):
             all_length_dict[axis_inputs_id][i+1] = {'sheath': [], 'cumulated_internode': []}
         # For coleoptile
-        if grouped_hiddenzone_inputs[0][0] == axis_inputs_id + (0,):
+        if axis_inputs_id + (0,) in grouped_hiddenzone_inputs.indices: # Not emerged
             all_length_dict[axis_inputs_id][0] = {'sheath': [], 'cumulated_internode': []}
 
-        elif grouped_element_inputs[0][0][:4] == axis_inputs_id + (0, 'sheath'):
+        elif axis_inputs_id + (0, 'sheath', 'StemElement') in grouped_element_inputs.indices: # Emerged
             all_length_dict[axis_inputs_id][0] = {'sheath': [], 'cumulated_internode': []}
 
         cumulated_internode_length[axis_inputs_id] = []
