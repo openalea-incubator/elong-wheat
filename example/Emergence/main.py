@@ -86,9 +86,9 @@ else:
     axis_inputs_df = pd.read_csv(AXIS_INPUTS_FILEPATH)
 
     # Convert NaN to None
-    hiddenzone_inputs_df = hiddenzone_inputs_df.where(hiddenzone_inputs_df.notnull(), None).copy(deep=True)
-    element_inputs_df = element_inputs_df.where(element_inputs_df.notnull(), None).copy(deep=True)
-    axis_inputs_df = axis_inputs_df.where(axis_inputs_df.notnull(), None).copy(deep=True)
+    hiddenzone_inputs_df = hiddenzone_inputs_df.replace({np.nan: None})
+    element_inputs_df = element_inputs_df.replace({np.nan: None})
+    axis_inputs_df = axis_inputs_df.replace({np.nan: None})
 
     inputs = elongwheat_converter.from_dataframes(hiddenzone_inputs_df, element_inputs_df, axis_inputs_df)
 

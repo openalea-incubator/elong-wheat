@@ -236,16 +236,19 @@ def Beta_function(leaf_pseudo_age, leaf_rank):
     :return: Normalized leaf length (m)
     :rtype: float
     """
-    if leaf_rank in (1, 2, 3):
-        te = 210 * 3600 * 24 / 12
-        tm = 145 * 3600 * 24 / 12
-        tb = -70 * 3600 * 24 / 12
-        leaf_L = abs((1 + (max(0, (te - leaf_pseudo_age)) / (te - tm))) * (min(1.0, float(leaf_pseudo_age - tb) / float(te - tb)) ** ((te - tb) / (te - tm))))
-    else:
-        leaf_L = abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm))) *
+    # if leaf_rank in (1, 2, 3):
+    #     te = 210 * 3600 * 24 / 12
+    #     tm = 145 * 3600 * 24 / 12
+    #     tb = -70 * 3600 * 24 / 12
+    #     leaf_L = abs((1 + (max(0, (te - leaf_pseudo_age)) / (te - tm))) * (min(1.0, float(leaf_pseudo_age - tb) / float(te - tb)) ** ((te - tb) / (te - tm))))
+    # else:
+    #     leaf_L = abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm))) *
+    #            (min(1.0, float(leaf_pseudo_age - parameters.tb) / float(parameters.te - parameters.tb)) **
+    #             ((parameters.te - parameters.tb) / (parameters.te - parameters.tm))))
+    # return leaf_L
+    return abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm))) *
                (min(1.0, float(leaf_pseudo_age - parameters.tb) / float(parameters.te - parameters.tb)) **
                 ((parameters.te - parameters.tb) / (parameters.te - parameters.tm))))
-    return leaf_L
 
 
 def calculate_deltaL_postE(leaf_rank, prev_leaf_pseudo_age, leaf_pseudo_age, prev_leaf_L, leaf_Lmax, sucrose, amino_acids, mstruct, optimal_growth_option=False):

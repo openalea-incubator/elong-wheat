@@ -94,6 +94,9 @@ class Simulation(object):
 
         #: Update parameters if specified
         if update_parameters:
+            unexpected_arguments = list(set(update_parameters.keys()) - set(parameters.__dict__.keys()))
+            if len(unexpected_arguments) != 0:
+                warnings.warn('Parameter(s) name {} is not expected and may ne not taken into account'.format(unexpected_arguments))
             parameters.__dict__.update(update_parameters)
 
     def initialize(self, inputs):
