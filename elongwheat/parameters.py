@@ -35,7 +35,7 @@ conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and inte
 # Exponential elongation
 RERmax_Ljutovac_fit = {2: 1.75e-06, 3: 1.47e-06, 4: 1.6e-06, 5: 1.47e-06, 6: 1.47e-06, 7: 1.45e-06, 8: 1.425e-06, 9: 1.4e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
-RERmax = {2: 2.05e-06, 3: 2.05e-06, 4: 3.5e-06, 5: 3.45e-06, 6: 3.45e-06, 7: 3e-06, 8: 2.45e-06, 9: 2.4e-06, 10: 2.25e-06, 11: 2.25e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {2: 2.2e-06, 3: 2.2e-06, 4: 4.e-06, 5: 4.e-06, 6: 4.5e-06, 7: 3e-06, 8: 2.45e-06, 9: 2.4e-06, 10: 2.25e-06, 11: 2.25e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
@@ -184,16 +184,17 @@ class ElementInit(object):
         self.senesced_length_element = 0  #: m
         self.green_area = 0  #: m2
         self.age = 0                  #: Thermal Time
+        self.age_teq = 0              #: s
         self.max_proteins = 0         #: µmol N
         self.Nresidual = 0            #: g
         self.sucrose = 0              #: µmol C
         self.amino_acids = 0          #: µmol N
         self.nitrates = 0             #: µmol N
         self.fructan = 0              #: µmol C
-        self.starch = 0              #: µmol C
+        self.starch = 0               #: µmol C
         self.proteins = 0             #: µmol N
         self.mstruct = 0              #: g
-        self.senesced_mstruct = 0  #: g
+        self.senesced_mstruct = 0     #: g
         self.max_mstruct = 0          #: g
         self.Nstruct = 0              #: g
         self.cytokinins = 0           #: g

@@ -84,13 +84,25 @@ def calculate_cumulated_thermal_time(sum_TT, temperature, delta_teq):
     :param float temperature: temperature (degree Celsius)
     :param float delta_teq: time duration equivalent at Tref(s)
 
-    :return: temperature-compensated time (s)
+    :return: cumulated thermal time (s)
     :rtype: float
     """
     if temperature > 0:
         return sum_TT + delta_teq * parameters.Temp_Tref / 24.0 / 3600  # Conversion to days at 12°C
     else:
         return sum_TT
+
+
+def calculate_element_age_teq(age_teq, delta_teq):
+    """ Age time equivalent of the element (s)
+
+    :param float age_teq: Previous age_teq of the element since emergence (s)
+    :param float delta_teq: Temperature-consensated time = time duration at a reference temperature (s)
+
+    :return: Updated age_teq (s)
+    :rtype: float
+    """
+    return age_teq + delta_teq
 
 
 def calculate_SAM_primodia(status, teq_since_primordium, delta_teq, nb_leaves, cohort_id):
@@ -237,8 +249,8 @@ def Beta_function(leaf_pseudo_age, leaf_rank):
     :rtype: float
     """
     if leaf_rank in (1, 2, 3):
-        te = 210 * 3600 * 24 / 12
-        tm = 145 * 3600 * 24 / 12
+        te = 270 * 3600 * 24 / 12
+        tm = 185 * 3600 * 24 / 12
         tb = -70 * 3600 * 24 / 12
         leaf_L = abs((1 + (max(0, (te - leaf_pseudo_age)) / (te - tm))) * (min(1.0, float(leaf_pseudo_age - tb) / float(te - tb)) ** ((te - tb) / (te - tm))))
     else:
@@ -440,16 +452,16 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, optimal_grow
     :return: Maximal leaf width (m)
     :rtype: float
     """
-    if optimal_growth_option or leaf_rank in (1, 2, 3):
-        Wmax = parameters.leaf_Wmax_dict[leaf_rank]
-
-    else:
-        #: Width:length ratio
-        W_L_ratio = max(parameters.leaf_W_L_MIN, parameters.leaf_W_L_a - (parameters.leaf_W_L_b / parameters.leaf_W_L_c) * (1 - exp(-parameters.leaf_W_L_c * integral_conc_sucr)))
-
-        #: Maximal width (m)
-        Wmax = lamina_Lmax * W_L_ratio
-    # Wmax = parameters.leaf_Wmax_dict[leaf_rank]
+    # if optimal_growth_option or leaf_rank in (1, 2, 3):
+    #     Wmax = parameters.leaf_Wmax_dict[leaf_rank]
+    #
+    # else:
+    #     #: Width:length ratio
+    #     W_L_ratio = max(parameters.leaf_W_L_MIN, parameters.leaf_W_L_a - (parameters.leaf_W_L_b / parameters.leaf_W_L_c) * (1 - exp(-parameters.leaf_W_L_c * integral_conc_sucr)))
+    #
+    #     #: Maximal width (m)
+    #     Wmax = lamina_Lmax * W_L_ratio
+    Wmax = parameters.leaf_Wmax_dict[leaf_rank]
     return Wmax
 
 
@@ -471,7 +483,7 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
         SSLW = (parameters.leaf_SSLW_a * integral_conc_sucr) / (parameters.leaf_SSLW_b + integral_conc_sucr)
-    return max(min(SSLW, SSLW_max), SSLW_min)
+    return parameters.leaf_SSLW[leaf_rank] #max(min(SSLW, SSLW_max), SSLW_min)
 
 
 def calculate_LSSW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
@@ -768,11 +780,12 @@ def calculate_end_internode_elongation(internode_L, internode_Lmax, internode_ps
     :return: Specifies if the internode has completed elongation (True) or not (False)
     :rtype: float
     """
-    condition_A = (internode_pseudo_age >= parameters.te_IN)
-    condition_B = False
+    condition_A = (internode_pseudo_age >= parameters.te_IN)  # test if pseudo age is higher than the maximal duration of IN elongation
+    condition_B = False  # test if IN length is longer than maximal length
+    condition_C = (internode_L == parameters.internode_L_init)  # test if IN length is still equal to the initial length (ie IN has not grown)
     if internode_Lmax:
         condition_B = (internode_L >= internode_Lmax)
-    return condition_A or condition_B
+    return condition_A or condition_B or condition_C
 
 
 # -------------------

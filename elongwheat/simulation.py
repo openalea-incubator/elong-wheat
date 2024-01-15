@@ -26,7 +26,7 @@ HIDDENZONE_INPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_age
                      'hiddenzone_age', 'leaf_Lmax', 'leaf_Lmax_em', 'lamina_Lmax', 'sheath_Lmax', 'leaf_Wmax', 'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'internode_Lmax_lig', 'LSIW',
                      'internode_is_visible', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct',
                      'internode_enclosed_Nstruct', 'mstruct', 'mean_conc_sucrose', 'leaf_is_remobilizing', 'internode_is_remobilizing']
-ELEMENT_INPUTS = ['length', 'Wmax', 'is_growing', 'age', 'is_over']
+ELEMENT_INPUTS = ['length', 'Wmax', 'is_growing', 'age', 'age_teq', 'is_over']
 AXIS_INPUTS = ['SAM_temperature', 'delta_teq', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'SAM_height', 'cohort', 'sum_TT']
 
 #: the outputs computed by ElongWheat
@@ -39,7 +39,7 @@ HIDDENZONE_OUTPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_ag
                       'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'ratio_DZ',
                       'mean_conc_sucrose', 'leaf_is_remobilizing', 'internode_is_remobilizing']
 ELEMENT_OUTPUTS = ['length', 'Wmax', 'is_growing', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'nitrates', 'starch', 'cytokinins',
-                   'mstruct', 'Nstruct', 'age', 'Nresidual', 'max_proteins', 'senesced_length_element', 'green_area', 'max_mstruct',
+                   'mstruct', 'Nstruct', 'age', 'age_teq', 'Nresidual', 'max_proteins', 'senesced_length_element', 'green_area', 'max_mstruct',
                    'senesced_mstruct', 'is_over']
 AXIS_OUTPUTS = ['SAM_temperature', 'delta_teq', 'delta_teq_roots', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'SAM_height', 'cohort', 'sum_TT']
 
@@ -192,12 +192,14 @@ class Simulation(object):
         # -----------------------------
 
         for element_id, element_inputs in sorted(all_element_inputs.items()):
-            # Update element's age, only used by ADEL to adapt element's geometry (sor far lamina curvature, could be used to adapt stem geometry too)
+            # Update element's age, only used by ADEL to adapt element's geometry (so far lamina curvature, could be used to adapt stem geometry too)
             # TODO : the calculation of element's age must be extracted from elongwheat as it is run even for mature leaves
             curr_age = all_element_inputs[element_id]['age']
+            curr_age_teq = all_element_inputs[element_id]['age_teq']
             axis_id = element_id[:2]
             curr_axis_outputs = all_axes_outputs[axis_id]
             self.outputs['elements'][element_id]['age'] = model.calculate_cumulated_thermal_time(curr_age, curr_axis_outputs['SAM_temperature'], curr_axis_outputs['delta_teq'])
+            self.outputs['elements'][element_id]['age_teq'] = model.calculate_element_age_teq(curr_age_teq, curr_axis_outputs['delta_teq'])
 
         # -----------------------------
         # ---------- Hiddenzones ------
@@ -281,6 +283,7 @@ class Simulation(object):
                     prev_leaf_emerged = all_hiddenzone_inputs[prev_hiddenzone_id]['leaf_is_emerged']
                     prev_hiddenzone_inputs = all_hiddenzone_inputs[prev_hiddenzone_id]
                 else:
+                    prev_hiddenzone_inputs = None
                     prev_leaf_emerged = True
 
                 prev_leaf2_hiddenzone_id = tuple(list(axis_id) + [phytomer_id - 2])
@@ -331,7 +334,14 @@ class Simulation(object):
                         warnings.warn('Pseudostem length of {} decreased while leaf growing.'.format(hiddenzone_id))
 
                     if prev_leaf2_emerged and not curr_hiddenzone_outputs['leaf_is_emerged'] and phytomer_id != 1:
-                        time_prev_leaf2_emergence = prev_hiddenzone_inputs['leaf_pseudo_age']
+                        prev_leaf2_lamina_id = tuple(list(axis_id) + [phytomer_id - 2] + ['blade'] + ['LeafElement1'])
+                        # Two alternatives to find the time of leaf n-2 emergence: either from the age (time equivalent) of lamina n-1 or from the pseudoage of hz n-1
+                        if prev_leaf2_lamina_id in all_element_inputs:
+                            time_prev_leaf2_emergence = all_element_inputs[prev_leaf2_lamina_id]['age_teq']
+                        elif prev_hiddenzone_inputs:
+                            time_prev_leaf2_emergence = prev_hiddenzone_inputs['leaf_pseudo_age']
+                        else:
+                            raise Exception("Can't find previous hz for current hz {}".format(hiddenzone_id))
                         curr_hiddenzone_outputs['mean_conc_sucrose'] = model.calculate_mean_conc_sucrose(hiddenzone_inputs['mean_conc_sucrose'],
                                                                                                          time_prev_leaf2_emergence,
                                                                                                          curr_axis_outputs['delta_teq'],
@@ -554,7 +564,7 @@ class Simulation(object):
                     if not prev_leaf_ligulated:
                         delta_internode_L = model.calculate_delta_internode_L_preL(phytomer_id, curr_hiddenzone_outputs['sucrose'], curr_hiddenzone_outputs['internode_L'],
                                                                                    curr_hiddenzone_outputs['amino_acids'], curr_hiddenzone_outputs['mstruct'],
-                                                                                   curr_axis_outputs['delta_teq'], optimal_growth_option=True)
+                                                                                   curr_axis_outputs['delta_teq'])
                         internode_L = curr_hiddenzone_outputs['internode_L'] + delta_internode_L  # TODO: Ckeck internode_L is not too large (in the case of long delta_t)
 
                         curr_hiddenzone_outputs['internode_L'] = internode_L
@@ -637,6 +647,7 @@ class Simulation(object):
                                     self.outputs['elements'][hidden_internode_id] = new_internode
                                 self.outputs['elements'][hidden_internode_id]['is_growing'] = False
                                 self.outputs['elements'][hidden_internode_id]['length'] = min(internode_L, internode_distance_to_emerge)
+                                print('internode {} is over'.format(hidden_internode_id))
 
                 #: Internode not elongating (not yet or already mature)
                 else:
@@ -657,6 +668,7 @@ class Simulation(object):
                     self.outputs['hiddenzone'][hiddenzone_id] = curr_hiddenzone_outputs
                 else:  # End of internode elongation
                     del self.outputs['hiddenzone'][hiddenzone_id]
+                    print('hgz {} is over'.format(hiddenzone_id))
 
         # -----------------------------
         # -------- COLEOPTILE ---------
