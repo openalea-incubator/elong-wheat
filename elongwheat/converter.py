@@ -34,7 +34,7 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
     :return: The inputs in a dictionary.
     :rtype: dict [str, dict]
 
-    .. seealso:: :attr:`simulation.Simulation.inputs` for the structure of Elong-Wheat inputs.
+    seealso:: :attr:`simulation.Simulation.inputs` for the structure of Elong-Wheat inputs.
 
     """
     all_hiddenzone_dict = {}
@@ -62,10 +62,10 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
         for i in range(axis_inputs_dict['nb_leaves']):
             all_length_dict[axis_inputs_id][i+1] = {'sheath': [], 'cumulated_internode': []}
         # For coleoptile
-        if axis_inputs_id + (0,) in grouped_hiddenzone_inputs.indices: # Not emerged
+        if axis_inputs_id + (0,) in grouped_hiddenzone_inputs.indices:  # Not emerged
             all_length_dict[axis_inputs_id][0] = {'sheath': [], 'cumulated_internode': []}
 
-        elif axis_inputs_id + (0, 'sheath', 'StemElement') in grouped_element_inputs.indices: # Emerged
+        elif axis_inputs_id + (0, 'sheath', 'StemElement') in grouped_element_inputs.indices:  # Emerged
             all_length_dict[axis_inputs_id][0] = {'sheath': [], 'cumulated_internode': []}
 
         cumulated_internode_length[axis_inputs_id] = []
@@ -120,7 +120,7 @@ def to_dataframes(data_dict):
     :return: One dataframe for hiddenzone outputs, one dataframe for element outputs and one dataframe for axis outputs.
     :rtype: (pandas.DataFrame, pandas.DataFrame, pandas.DataFrame)
 
-    .. seealso:: :attr:`simulation.Simulation.outputs` for the structure of Elong-Wheat outputs.
+    seealso:: :attr:`simulation.Simulation.outputs` for the structure of Elong-Wheat outputs.
     """
     dataframes_dict = {}
     for (current_key, current_topology_columns, current_outputs_names) in (('hiddenzone', HIDDENZONE_TOPOLOGY_COLUMNS, simulation.HIDDENZONE_OUTPUTS),

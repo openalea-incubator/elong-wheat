@@ -363,12 +363,13 @@ class Simulation(object):
                         curr_hiddenzone_outputs['leaf_pseudo_age'] = leaf_pseudo_age
                         curr_hiddenzone_outputs['delta_leaf_pseudo_age'] = leaf_pseudo_age - hiddenzone_inputs['leaf_pseudo_age']
 
-                        delta_leaf_L = model.calculate_deltaL_postE(phytomer_id, hiddenzone_inputs['leaf_pseudo_age'], leaf_pseudo_age, hiddenzone_inputs['leaf_L'], hiddenzone_inputs['leaf_Lmax_em'],
-                                                                    hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'], optimal_growth_option)
+                        delta_leaf_L = model.calculate_deltaL_postE(hiddenzone_inputs['leaf_pseudo_age'], leaf_pseudo_age, hiddenzone_inputs['leaf_L'], hiddenzone_inputs['leaf_Lmax_em'],
+                                                                    hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'], phytomer_id, optimal_growth_option)
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
 
                         # Update leaf_Lmax. Subsequently, lamina_Lmax and sheath_Lmax will be updated depending on each element status (growing or mature)
-                        curr_hiddenzone_outputs['leaf_Lmax'] = model.calculate_update_leaf_Lmax(phytomer_id, hiddenzone_inputs['leaf_Lmax_em'], leaf_L, leaf_pseudo_age)
+                        if phytomer_id not in (0, 1):
+                            curr_hiddenzone_outputs['leaf_Lmax'] = model.calculate_update_leaf_Lmax(hiddenzone_inputs['leaf_Lmax_em'], leaf_L, leaf_pseudo_age, phytomer_id)
 
                         # Ratio (mass) of Division Zone in the hiddenzone
                         curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length)
@@ -397,7 +398,7 @@ class Simulation(object):
                                 if next_hiddenzone_id in all_hiddenzone_inputs:
                                     next_hiddenzone_inputs = all_hiddenzone_inputs[next_hiddenzone_id]
                                     next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
-                                    next_hiddenzone_outputs['leaf_Lmax'] = model.calculate_leaf_Lmax(next_hiddenzone_id[-1], next_hiddenzone_inputs['leaf_L'])  #: Final leaf length
+                                    next_hiddenzone_outputs['leaf_Lmax'] = model.calculate_leaf_Lmax(next_hiddenzone_inputs['leaf_L'], phytomer_id+1)  #: Final leaf length
                                     next_hiddenzone_outputs['leaf_Lmax_em'] = next_hiddenzone_outputs['leaf_Lmax']  #: Final leaf length at Ln-1 em
                                     sheath_lamina_ratio = model.calculate_SL_ratio(next_hiddenzone_id[2])  #: Sheath:Lamina final length ratio
                                     next_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(next_hiddenzone_outputs['leaf_Lmax'], sheath_lamina_ratio)  #: Final lamina length
@@ -543,7 +544,8 @@ class Simulation(object):
                 #: Initialisation of internode elongation
                 if (not curr_hiddenzone_outputs['internode_is_growing']) and (curr_hiddenzone_outputs['internode_L'] == 0):
                     #: As for leaf primordia, we neglect CN growth due to IN length initialisation
-                    curr_hiddenzone_outputs['internode_is_growing'], curr_hiddenzone_outputs['internode_L'] = model.calculate_init_internode_elongation(curr_hiddenzone_outputs['hiddenzone_age'])
+                    curr_hiddenzone_outputs['internode_is_growing'], curr_hiddenzone_outputs['internode_L'] = model.calculate_init_internode_elongation(curr_hiddenzone_outputs['hiddenzone_age'],
+                                                                                                                                                        phytomer_id)
                     if curr_hiddenzone_outputs['internode_is_growing']:
                         new_internode = parameters.ElementInit().__dict__
                         self.outputs['elements'][hidden_internode_id] = new_internode
