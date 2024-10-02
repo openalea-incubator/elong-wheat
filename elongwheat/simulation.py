@@ -6,6 +6,7 @@ import warnings
 import copy
 
 import pandas as pd
+import numpy as np
 
 from elongwheat import model
 from elongwheat import parameters
@@ -335,7 +336,7 @@ class Simulation(object):
 
                     if prev_leaf2_emerged and not curr_hiddenzone_outputs['leaf_is_emerged'] and phytomer_id != 1:
                         prev_leaf2_lamina_id = tuple(list(axis_id) + [phytomer_id - 2] + ['blade'] + ['LeafElement1'])
-                        # Two alternatives to find the time of leaf n-2 emergence: either from the age (time equivalent) of lamina n-1 or from the pseudoage of hz n-1
+                        # Two alternatives to find the time of leaf n-2 emergence: either from the age (time equivalent) of lamina n-2 or from the pseudo_age of hz n-1
                         if prev_leaf2_lamina_id in all_element_inputs:
                             time_prev_leaf2_emergence = all_element_inputs[prev_leaf2_lamina_id]['age_teq']
                         elif prev_hiddenzone_inputs:
@@ -588,7 +589,7 @@ class Simulation(object):
                         #: Elongation only if Gibberelin production by SAM
                         if curr_axis_outputs['GA']:
                             #: Case of internodes that will not fully elongate, GA synthesis started after their previous leaf ligulation (i.e. no Lmax defined)
-                            if (curr_hiddenzone_outputs['internode_Lmax'] is None) or (curr_hiddenzone_outputs['internode_Lmax_lig'] is None):
+                            if pd.isnull(curr_hiddenzone_outputs['internode_Lmax']) or pd.isnull(curr_hiddenzone_outputs['internode_Lmax_lig']):
                                 curr_hiddenzone_outputs['internode_Lmax'] = curr_hiddenzone_outputs['internode_Lmax_lig'] = model.calculate_short_internode_Lmax(curr_hiddenzone_outputs['internode_L'],
                                                                                                                                                                  curr_hiddenzone_outputs[
                                                                                                                                                                      'internode_pseudo_age'])

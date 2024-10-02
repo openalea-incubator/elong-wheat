@@ -172,7 +172,7 @@ def calculate_ligule_height(sheath_internode_length, all_element_inputs, SAM_id,
             ligule_height_df = pd.DataFrame([(SAM_id, phytomer_id, ligule_height)], columns=list(all_ligule_height_df))
             all_ligule_height_df = pd.concat((all_ligule_height_df, ligule_height_df))
 
-        elif phytomer_id == 0:  # Coleoptile
+        elif phytomer_id == 0 and len(sheath_internode_length[phytomer_id]['sheath']) != 0:  # Coleoptile
             coleoptile_length_df = pd.DataFrame([(SAM_id, phytomer_id, sheath_internode_length[phytomer_id]['sheath'][0])], columns=list(all_ligule_height_df))
             all_ligule_height_df = pd.concat((all_ligule_height_df, coleoptile_length_df))
 
@@ -284,7 +284,7 @@ def calculate_deltaL_postE(prev_leaf_pseudo_age, leaf_pseudo_age, prev_leaf_L, l
         # Beta function
         delta_leaf_L_Beta_0 = min(leaf_Lmax, leaf_Lmax * (Beta_function(leaf_pseudo_age, leaf_rank) - Beta_function(prev_leaf_pseudo_age, leaf_rank)))
 
-        if optimal_growth_option:
+        if optimal_growth_option or leaf_rank == 1:
             # Current leaf length
             delta_leaf_L = delta_leaf_L_Beta_0
         elif conc_sucrose_effective > 0 and amino_acids > 0:
@@ -446,13 +446,13 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, optimal_grow
 
     :param float lamina_Lmax: Maximal lamina length (m)
     :param int leaf_rank: leaf phytomer number
-    :param float integral_conc_sucr: 
+    :param float integral_conc_sucr: mean sucrose concentration of the hiddenzone since leaf n-2 emergence (µmol C g-1)
     :param bool optimal_growth_option: if True the function will calculate leaf Wmax assuming optimal growth conditions
     
     :return: Maximal leaf width (m)
     :rtype: float
     """
-    if optimal_growth_option or leaf_rank in (1, 2, 3):
+    if optimal_growth_option or leaf_rank in (1,2):
         Wmax = parameters.leaf_Wmax_dict[leaf_rank]
 
     else:
@@ -461,7 +461,7 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, optimal_grow
 
         #: Maximal width (m)
         Wmax = lamina_Lmax * W_L_ratio
-    # Wmax = parameters.leaf_Wmax_dict[leaf_rank]
+    Wmax = parameters.leaf_Wmax_dict[leaf_rank]
     return Wmax
 
 
@@ -479,10 +479,11 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     SSLW_min = parameters.leaf_SSLW_MIN
     SSLW_max = parameters.leaf_SSLW_MAX
 
-    if optimal_growth_option or leaf_rank in (1, 2, 3):
+    if optimal_growth_option or leaf_rank in (1,2):
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
         SSLW = (parameters.leaf_SSLW_a * integral_conc_sucr) / (parameters.leaf_SSLW_b + integral_conc_sucr)
+    SSLW = parameters.leaf_SSLW[leaf_rank]
     return max(min(SSLW, SSLW_max), SSLW_min)
 
 
@@ -490,17 +491,18 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     """ Lineic Structural Sheath Weight.
 
     :param int leaf_rank: leaf phytomer number
-    :param float integral_conc_sucr:
+    :param float integral_conc_sucr: mean sucrose concentration of the hiddenzone since leaf n-2 emergence (µmol C g-1)
     :param bool optimal_growth_option: if True the function will calculate LSLW assuming optimal growth conditions
     
     :return: Lineic Structural Sheath Weight (g m-1)
     :rtype: float
     """
-    if optimal_growth_option or leaf_rank in (1, 2, 3):
+    if optimal_growth_option or leaf_rank in (1,2):
         LSSW = parameters.leaf_LSSW_dict[leaf_rank]
     else:
         LSSW_nominal = parameters.leaf_LSSW_nominal_A * leaf_rank + parameters.leaf_LSSW_nominal_B
         LSSW = LSSW_nominal + parameters.leaf_LSSW_a * (integral_conc_sucr - parameters.leaf_LSSW_integral_min)
+    LSSW = parameters.leaf_LSSW_dict[leaf_rank]
 
     return max(min(LSSW, parameters.leaf_LSSW_MAX), parameters.leaf_LSSW_MIN)
 
@@ -789,10 +791,10 @@ def calculate_end_internode_elongation(internode_L, internode_Lmax, internode_ps
     """
     condition_A = (internode_pseudo_age >= parameters.te_IN)  # test if pseudo age is higher than the maximal duration of IN elongation
     condition_B = False  # test if IN length is longer than maximal length
-    condition_C = (internode_L == parameters.internode_L_init)  # test if IN length is still equal to the initial length (ie IN has not grown)
+    # condition_C = (internode_L == parameters.internode_L_init)  # test if IN length is still equal to the initial length (ie IN has not grown)
     if internode_Lmax:
         condition_B = (internode_L >= internode_Lmax)
-    return condition_A or condition_B or condition_C
+    return condition_A or condition_B #or condition_C
 
 
 # -------------------
