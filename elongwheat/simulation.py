@@ -690,7 +690,7 @@ class Simulation(object):
             else:
                 continue
             #: Maximal coleoptile length provided in inputs or calculated from sowing depth
-            if not curr_coleoptile_outputs['leaf_Lmax']:
+            if np.isnan(curr_coleoptile_outputs['leaf_Lmax']):
                 curr_coleoptile_outputs['leaf_Lmax'] = model.calculate_coleo_Lmax(Zsowing)
 
             #: Coleoptile elongation equals that of leaf 1

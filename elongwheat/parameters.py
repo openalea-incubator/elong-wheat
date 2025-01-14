@@ -33,10 +33,10 @@ Temp_Ttransition = 9  # Below this temperature f = linear function of temperatur
 conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and internode growth occurs (µmol of C g-1 mstruct) - same for root growth, see growthwheat
 
 # Exponential elongation
-RERmax_Ljutovac_fit = {2: 2.5e-06, 3: 1.7e-06, 4: 1.7e-06, 5: 1.7e-06, 6: 1.47e-06, 7: 1.45e-06, 8: 1.425e-06, 9: 1.4e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
+RERmax_Ljutovac_fit = {2: 2.5e-06, 3: 1.7e-06, 4: 1.7e-06, 5: 1.7e-06, 6: 1.5e-06, 7: 1.5e-06, 8: 1.5e-06, 9: 1.5e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
 #RERmax = {2: 2.1e-06, 3: 2.5e-06, 4: 2.68e-06, 5: 2.65e-06, 6: 2.65e-06, 7: 2.65e-06, 8: 2.5e-06, 9: 2.3e-06, 10: 2.2e-06, 11: 2.2e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-RERmax = {2: 1.8e-06, 3: 2.2e-06, 4: 2.15e-06, 5: 2.2e-06, 6: 2.35e-06, 7: 2.35e-06, 8: 2.2e-06, 9: 2.1e-06, 10: 2.e-06, 11: 2.e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {2: 1.8e-06, 3: 2.225e-06, 4: 2.115e-06, 5: 2.115e-06, 6: 2.2e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 1.95e-06, 10: 1.8e-06, 11: 1.8e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
@@ -52,7 +52,8 @@ leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
 leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
 
 # Leaf maximal width  TODO doc
-leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0048, 5: 0.00545, 6: 0.00734, 7: 0.0913, 8: 0.0111, 9: 0.0163, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+leaf_Wmax_Marion = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
 leaf_W_L_MIN = 0.025  #: Minimal leaf width
 leaf_W_L_a = -0.02033728
 leaf_W_L_b = -0.00005445836
@@ -60,6 +61,7 @@ leaf_W_L_c = 0.000459551
 
 # Structural Specific Lamina Weight
 leaf_SSLW = {1: 21, 2: 21, 3: 21, 4: 22, 5: 22, 6: 22, 7: 22, 8: 24, 9: 25, 10: 28, 11: 31}  # SSLW (g m-2)
+leaf_SSLW_Marion = {1: 21, 2: 21, 3: 22, 4: 17, 5: 19.58, 6: 20.9, 7: 23.55, 8: 25.63, 9: 28.65, 10: 28, 11: 31}  # SSLW (g m-2)
 leaf_SSLW_NEMA = {1: 15, 2: 23, 3: 25, 4: 24, 5: 21, 6: 18, 7: 16, 8: 18, 9: 21, 10: 26, 11: 33}  # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_MIN = 5.
 leaf_SSLW_MAX = 45.
@@ -67,6 +69,7 @@ leaf_SSLW_a = 47.50516  # g m-2
 leaf_SSLW_b = 2927.944  # µmol C g-1
 
 leaf_LSSW_dict = {1: 0.06, 2: 0.08, 3: 0.08, 4: 0.18, 5: 0.17, 6: 0.21, 7: 0.24, 8: 0.4, 9: 0.5, 10: 0.55, 11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
+leaf_LSSW_dict_Marion = {1: 0.06, 2: 0.08, 3: 0.09, 4: 0.16, 5: 0.21, 6: 0.26, 7: 0.32, 8: 0.37, 9: 0.43, 10: 0.55, 11: 0.65}
 leaf_LSSW_a = 0.00005
 leaf_LSSW_integral_min = 1700
 leaf_LSSW_nominal_A = 0.0403
@@ -92,6 +95,8 @@ ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the leaf h
 # -------------------------------------------------------------------------------------------------------------------
 # Exponential elongation
 RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 2.4E-06, 5: 2.4E-06, 6: 2.4E-06, 7: 2.16E-06, 8: 1.8E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
+# RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 2.4E-06, 5: 2.6E-06, 6: 2.6E-06, 7: 2.3E-06, 8: 1.9E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
+
 # { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 : 2.48E-06 , 8 : 2.48E-06 , 9 : 2.48E-06 , 10 : 1.9E-06 , 11 : 1.6E-06 }#: s-1 at 12°C
 # estimate from Ljutovac 2002 over the period until leaf ligulation i.e. wider than in the model.
 # Because i) not enought data if we consider only up to previous leaf ligulation, ii) same exponential like period

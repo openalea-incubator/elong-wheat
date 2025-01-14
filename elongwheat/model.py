@@ -461,7 +461,7 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, optimal_grow
 
         #: Maximal width (m)
         Wmax = lamina_Lmax * W_L_ratio
-    Wmax = parameters.leaf_Wmax_dict[leaf_rank]
+    # Wmax = parameters.leaf_Wmax_Marion[leaf_rank]
     return Wmax
 
 
@@ -483,7 +483,7 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
         SSLW = (parameters.leaf_SSLW_a * integral_conc_sucr) / (parameters.leaf_SSLW_b + integral_conc_sucr)
-    SSLW = parameters.leaf_SSLW[leaf_rank]
+    # SSLW = parameters.leaf_SSLW_Marion[leaf_rank]
     return max(min(SSLW, SSLW_max), SSLW_min)
 
 
@@ -502,7 +502,7 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     else:
         LSSW_nominal = parameters.leaf_LSSW_nominal_A * leaf_rank + parameters.leaf_LSSW_nominal_B
         LSSW = LSSW_nominal + parameters.leaf_LSSW_a * (integral_conc_sucr - parameters.leaf_LSSW_integral_min)
-    LSSW = parameters.leaf_LSSW_dict[leaf_rank]
+    # LSSW = parameters.leaf_LSSW_dict_Marion[leaf_rank]
 
     return max(min(LSSW, parameters.leaf_LSSW_MAX), parameters.leaf_LSSW_MIN)
 
