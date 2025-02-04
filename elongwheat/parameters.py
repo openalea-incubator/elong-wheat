@@ -13,118 +13,121 @@ from __future__ import division  # use "//" to do integer division
 
 """
 
-# -------------------------------------------------------------------------------------------------------------------
-# --- SAM
-# -------------------------------------------------------------------------------------------------------------------
-PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
-max_nb_leaves = 11   #: Max number of leaves per axis
-delta_TT_GA = PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
+class Parameters(object):
+    def __init__(self):
+        # -------------------------------------------------------------------------------------------------------------------
+        # --- SAM
+        # -------------------------------------------------------------------------------------------------------------------
+        self.PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
+        self.max_nb_leaves = 11   #: Max number of leaves per axis
+        self.delta_TT_GA = self.PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
-# Parameters for temperature responses
-Temp_Tref = 12        # Arbitrary reference temperature (°C)
-Temp_Ea_R = 8900      # Parameter Ea/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
-Temp_DS_R = 68.432    # Parameter deltaS/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (dimensionless)
-Temp_DH_R = 20735.5   # Parameter deltaH/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
-Temp_Ttransition = 9  # Below this temperature f = linear function of temperature instead of Arrhenius-like(°C)
+        # Parameters for temperature responses
+        self.Temp_Tref = 12        # Arbitrary reference temperature (°C)
+        self.Temp_Ea_R = 8900      # Parameter Ea/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
+        self.Temp_DS_R = 68.432    # Parameter deltaS/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (dimensionless)
+        self.Temp_DH_R = 20735.5   # Parameter deltaH/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
+        self.Temp_Ttransition = 9  # Below this temperature f = linear function of temperature instead of Arrhenius-like(°C)
 
-# -------------------------------------------------------------------------------------------------------------------
-# --- Leaves
-# -------------------------------------------------------------------------------------------------------------------
-conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and internode growth occurs (µmol of C g-1 mstruct) - same for root growth, see growthwheat
+        # -------------------------------------------------------------------------------------------------------------------
+        # --- Leaves
+        # -------------------------------------------------------------------------------------------------------------------
+        self.conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and internode growth occurs (µmol of C g-1 mstruct) - same for root growth, see growthwheat
 
-# Exponential elongation
-RERmax_Ljutovac_fit = {2: 2.5e-06, 3: 1.7e-06, 4: 1.7e-06, 5: 1.7e-06, 6: 1.5e-06, 7: 1.5e-06, 8: 1.5e-06, 9: 1.5e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
-# { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
-#RERmax = {2: 2.1e-06, 3: 2.5e-06, 4: 2.68e-06, 5: 2.65e-06, 6: 2.65e-06, 7: 2.65e-06, 8: 2.5e-06, 9: 2.3e-06, 10: 2.2e-06, 11: 2.2e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-RERmax = {2: 1.8e-06, 3: 2.225e-06, 4: 2.115e-06, 5: 2.115e-06, 6: 2.2e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 1.95e-06, 10: 1.8e-06, 11: 1.8e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
-RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
+        # Exponential elongation
+        self.RERmax_Ljutovac_fit = {2: 2.5e-06, 3: 1.7e-06, 4: 1.7e-06, 5: 1.7e-06, 6: 1.5e-06, 7: 1.5e-06, 8: 1.5e-06, 9: 1.5e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
+        # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
+        #RERmax = {2: 2.1e-06, 3: 2.5e-06, 4: 2.68e-06, 5: 2.65e-06, 6: 2.65e-06, 7: 2.65e-06, 8: 2.5e-06, 9: 2.3e-06, 10: 2.2e-06, 11: 2.2e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+        self.RERmax = {2: 1.82e-06, 3: 2.21e-06, 4: 2.1e-06, 5: 2.1e-06, 6: 2.15e-06, 7: 2.1e-06, 8: 2.05e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+        self.RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
+        self.RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
-# Automate elongation
-te = 300 * 3600 * 24 / 12     #: end of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
-tm = 204.6 * 3600 * 24 / 12   #: time at which leaf elongation rate is maximal in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
-tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
-# NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
-leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
+        # Automate elongation
+        self.te = 300 * 3600 * 24 / 12     #: end of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
+        self.tm = 204.6 * 3600 * 24 / 12   #: time at which leaf elongation rate is maximal in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
+        self.tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
+        # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
+        self.leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
 
-leaf_pseudo_age_Vmax = 1.2    #: Maximal regulation of leaf length after emergence by CN status (dimensionless)
-leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
-leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
+        self.leaf_pseudo_age_Vmax = 1.2    #: Maximal regulation of leaf length after emergence by CN status (dimensionless)
+        self.leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
+        self.leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
 
-# Leaf maximal width  TODO doc
-leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0048, 5: 0.00545, 6: 0.00734, 7: 0.0913, 8: 0.0111, 9: 0.0163, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
-leaf_Wmax_Marion = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
-leaf_W_L_MIN = 0.025  #: Minimal leaf width
-leaf_W_L_a = -0.02033728
-leaf_W_L_b = -0.00005445836
-leaf_W_L_c = 0.000459551
+        # Leaf maximal width  TODO doc
+        self.leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0048, 5: 0.00545, 6: 0.00734, 7: 0.0913, 8: 0.0111, 9: 0.0163, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+        self.leaf_Wmax_Marion = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+        self.leaf_W_L_MIN = 0.025  #: Minimal leaf width
+        self.leaf_W_L_a = -0.02033728
+        self.leaf_W_L_b = -0.00005445836
+        self.leaf_W_L_c = 0.000459551
 
-# Structural Specific Lamina Weight
-leaf_SSLW = {1: 21, 2: 21, 3: 21, 4: 22, 5: 22, 6: 22, 7: 22, 8: 24, 9: 25, 10: 28, 11: 31}  # SSLW (g m-2)
-leaf_SSLW_Marion = {1: 21, 2: 21, 3: 22, 4: 17, 5: 19.58, 6: 20.9, 7: 23.55, 8: 25.63, 9: 28.65, 10: 28, 11: 31}  # SSLW (g m-2)
-leaf_SSLW_NEMA = {1: 15, 2: 23, 3: 25, 4: 24, 5: 21, 6: 18, 7: 16, 8: 18, 9: 21, 10: 26, 11: 33}  # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
-leaf_SSLW_MIN = 5.
-leaf_SSLW_MAX = 45.
-leaf_SSLW_a = 47.50516  # g m-2
-leaf_SSLW_b = 2927.944  # µmol C g-1
+        # Structural Specific Lamina Weight
+        self.leaf_SSLW = {1: 21, 2: 21, 3: 21, 4: 22, 5: 22, 6: 22, 7: 22, 8: 24, 9: 25, 10: 28, 11: 31}  # SSLW (g m-2)
+        self.leaf_SSLW_Marion = {1: 21, 2: 21, 3: 22, 4: 17, 5: 19.58, 6: 20.9, 7: 23.55, 8: 25.63, 9: 28.65, 10: 28, 11: 31}  # SSLW (g m-2)
+        self.leaf_SSLW_NEMA = {1: 15, 2: 23, 3: 25, 4: 24, 5: 21, 6: 18, 7: 16, 8: 18, 9: 21, 10: 26, 11: 33}  # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
+        self.leaf_SSLW_MIN = 5.
+        self.leaf_SSLW_MAX = 45.
+        self.leaf_SSLW_a = 47.50516  # g m-2
+        self.leaf_SSLW_b = 2927.944  # µmol C g-1
 
-leaf_LSSW_dict = {1: 0.06, 2: 0.08, 3: 0.08, 4: 0.18, 5: 0.17, 6: 0.21, 7: 0.24, 8: 0.4, 9: 0.5, 10: 0.55, 11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
-leaf_LSSW_dict_Marion = {1: 0.06, 2: 0.08, 3: 0.09, 4: 0.16, 5: 0.21, 6: 0.26, 7: 0.32, 8: 0.37, 9: 0.43, 10: 0.55, 11: 0.65}
-leaf_LSSW_a = 0.00005
-leaf_LSSW_integral_min = 1700
-leaf_LSSW_nominal_A = 0.0403
-leaf_LSSW_nominal_B = -0.0099
-leaf_LSSW_MIN = 0.05
-leaf_LSSW_MAX = 0.8
+        self.leaf_LSSW_dict = {1: 0.06, 2: 0.08, 3: 0.08, 4: 0.18, 5: 0.17, 6: 0.21, 7: 0.24, 8: 0.4, 9: 0.5, 10: 0.55, 11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
+        self.leaf_LSSW_dict_Marion = {1: 0.06, 2: 0.08, 3: 0.09, 4: 0.16, 5: 0.21, 6: 0.26, 7: 0.32, 8: 0.37, 9: 0.43, 10: 0.55, 11: 0.65}
+        self.leaf_LSSW_a = 0.00005
+        self.leaf_LSSW_integral_min = 1700
+        self.leaf_LSSW_nominal_A = 0.0403
+        self.leaf_LSSW_nominal_B = -0.0099
+        self.leaf_LSSW_MIN = 0.05
+        self.leaf_LSSW_MAX = 0.8
 
-# Sheath: lamina ratio. Parameters of a polynomial function, from Dornbush 2011
-SL_ratio_a = -0.0021
-SL_ratio_b = 0.037
-SL_ratio_c = - 0.1527
-SL_ratio_d = 0.4962
+        # Sheath: lamina ratio. Parameters of a polynomial function, from Dornbush 2011
+        self.SL_ratio_a = -0.0021
+        self.SL_ratio_b = 0.037
+        self.SL_ratio_c = - 0.1527
+        self.SL_ratio_d = 0.4962
 
-# Ratio of leaf length composed by the division zone.
-# Parameters are used for an inverse beta function representing the ratio of the leaf composed by the division zone accoring to its relative length in log.
-# The model was fitted on litterature data on wheat (Fournier 2005, Beemster and Masle 1996, Schuppler 1998).
-ratio_DZ_l_init = 0.065     #: normalized log of leaf length at which the leaf is fully composed by the division zone (dimensionless).
-ratio_DZ_l_mid = 0.075      #: intermediate point of the beta function (dimensionless).
-ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the leaf has no more division zone (dimensionless).
+        # Ratio of leaf length composed by the division zone.
+        # Parameters are used for an inverse beta function representing the ratio of the leaf composed by the division zone accoring to its relative length in log.
+        # The model was fitted on litterature data on wheat (Fournier 2005, Beemster and Masle 1996, Schuppler 1998).
+        self.ratio_DZ_l_init = 0.065     #: normalized log of leaf length at which the leaf is fully composed by the division zone (dimensionless).
+        self.ratio_DZ_l_mid = 0.075      #: intermediate point of the beta function (dimensionless).
+        self.ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the leaf has no more division zone (dimensionless).
 
-# -------------------------------------------------------------------------------------------------------------------
-# --- Internodes
-# -------------------------------------------------------------------------------------------------------------------
-# Exponential elongation
-RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 2.4E-06, 5: 2.4E-06, 6: 2.4E-06, 7: 2.16E-06, 8: 1.8E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
-# RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 2.4E-06, 5: 2.6E-06, 6: 2.6E-06, 7: 2.3E-06, 8: 1.9E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
+        # -------------------------------------------------------------------------------------------------------------------
+        # --- Internodes
+        # -------------------------------------------------------------------------------------------------------------------
+        # Exponential elongation
+        self.RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 1.E-06, 5: 5.E-06, 6: 4.E-06, 7: 4.E-06, 8: 3.E-06, 9: 3.E-06, 10: 2.5E-06, 11: 2.5E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
+        # RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 2.4E-06, 5: 2.6E-06, 6: 2.6E-06, 7: 2.3E-06, 8: 1.9E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
 
-# { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 : 2.48E-06 , 8 : 2.48E-06 , 9 : 2.48E-06 , 10 : 1.9E-06 , 11 : 1.6E-06 }#: s-1 at 12°C
-# estimate from Ljutovac 2002 over the period until leaf ligulation i.e. wider than in the model.
-# Because i) not enought data if we consider only up to previous leaf ligulation, ii) same exponential like period
+        # { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 : 2.48E-06 , 8 : 2.48E-06 , 9 : 2.48E-06 , 10 : 1.9E-06 , 11 : 1.6E-06 }#: s-1 at 12°C
+        # estimate from Ljutovac 2002 over the period until leaf ligulation i.e. wider than in the model.
+        # Because i) not enought data if we consider only up to previous leaf ligulation, ii) same exponential like period
 
-# SCALING_FACTOR_INT = 59  #: Scaling factor of the internode in automate growth (dimensionless), Malvoisin 1984 II
-# SCALING_FACTOR_INT = 53    #: Scaling factor of the internode in automate growth (dimensionless), Ljutovac 2002, 250pl.m-2
+        # SCALING_FACTOR_INT = 59  #: Scaling factor of the internode in automate growth (dimensionless), Malvoisin 1984 II
+        # SCALING_FACTOR_INT = 53    #: Scaling factor of the internode in automate growth (dimensionless), Ljutovac 2002, 250pl.m-2
 
-# Initiation of internode elongation
-nb_PLASTO_internode_init = 5  #: Delay between leaf initiation and internode initiation expressed as a number of plastochron. From Malvoisin 1984b, associated with priodia of 5.10-4 m
-internode_L_init = 5E-5       #: Initial internode length (m)
+        # Initiation of internode elongation
+        self.nb_PLASTO_internode_init = 5  #: Delay between leaf initiation and internode initiation expressed as a number of plastochron. From Malvoisin 1984b, associated with priodia of 5.10-4 m
+        self.internode_L_init = 5E-5       #: Initial internode length (m)
 
-# Automate elongation
-# te_IN = 210 * 3600 * 24 /12  #: end of internode elongation in automate growth; Malvoisin 1984 II
-# tm_IN = 156 * 3600 * 24 /12  #: time at which internode elongation rate is maximal in automate growth (s); Malvoisin 1984 II
-# tb_IN = -70 * 3600 * 24 /12  #: beginning of internode elongation in automate growth (s); Malvoisin 1984 II
-te_IN = 331.7538 * 3600 * 24 / 12  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
-tm_IN = 252.7798 * 3600 * 24 / 12  #: time at which internode elongation rate is maximal in automate growth (s);Ljutovac 2002, 250pl.m-2
-tb_IN = -374.2918 * 3600 * 24 / 12  #: beginning of internode elongation in automate growth (s);Ljutovac 2002, 250pl.m-2
+        # Automate elongation
+        # te_IN = 210 * 3600 * 24 /12  #: end of internode elongation in automate growth; Malvoisin 1984 II
+        # tm_IN = 156 * 3600 * 24 /12  #: time at which internode elongation rate is maximal in automate growth (s); Malvoisin 1984 II
+        # tb_IN = -70 * 3600 * 24 /12  #: beginning of internode elongation in automate growth (s); Malvoisin 1984 II
+        self.te_IN = 331.7538 * 3600 * 24 / 12  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
+        self.tm_IN = 252.7798 * 3600 * 24 / 12  #: time at which internode elongation rate is maximal in automate growth (s);Ljutovac 2002, 250pl.m-2
+        self.tb_IN = -374.2918 * 3600 * 24 / 12  #: beginning of internode elongation in automate growth (s);Ljutovac 2002, 250pl.m-2
 
-ratio_LSIW_LSSW = 2.5  #: ratio lineic structural internode mass / lineic structural sheath mass  of the specific structural dry masses (from data of J. Bertheloot, 2004)
-internode_LSIW_dict = {1: 2.8, 2: 2.8, 3: 2.8, 4: 2.8, 5: 2.8, 6: 2.8, 7: 2.8, 8: 2.8, 9: 2.3, 10: 1.7, 11: 1.6, 12: 1.4, 13: 0.7}  #: experiment of M.Gauthier 2017/18, consistent with R.Barillot 2014
+        self.ratio_LSIW_LSSW = 2.5  #: ratio lineic structural internode mass / lineic structural sheath mass  of the specific structural dry masses (from data of J. Bertheloot, 2004)
+        self.internode_LSIW_dict = {1: 2.8, 2: 2.8, 3: 2.8, 4: 2.8, 5: 2.8, 6: 2.8, 7: 2.8, 8: 2.8, 9: 2.3, 10: 1.7, 11: 1.6, 12: 1.4, 13: 0.7}  #: experiment of M.Gauthier 2017/18, consistent with R.Barillot 2014
 
 
-# -------------------------------------------------------------------------------------------------------------------
-# --- Coleoptiles
-# -------------------------------------------------------------------------------------------------------------------
-delta_L_emergence = 0.003  #: length of visible coleoptile ie emerged from soil (m). Current value set allows coleo to match length of sheath 1 in Sreten.
+        # -------------------------------------------------------------------------------------------------------------------
+        # --- Coleoptiles
+        # -------------------------------------------------------------------------------------------------------------------
+        self.delta_L_emergence = 0.003  #: length of visible coleoptile ie emerged from soil (m). Current value set allows coleo to match length of sheath 1 in Sreten.
 
+PARAMETERS = Parameters()
 
 class HiddenZoneInit(object):
     """

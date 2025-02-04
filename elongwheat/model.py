@@ -2,7 +2,7 @@
 
 from __future__ import division  # use "//" to do integer division
 import pandas as pd
-from elongwheat import parameters
+from elongwheat import parameters as elongwheat_parameters
 from math import exp, log10
 
 """
@@ -15,6 +15,7 @@ from math import exp, log10
     :license: see LICENSE for details.
 """
 
+parameters = elongwheat_parameters.PARAMETERS
 
 # -------------------------------------------------------------------------------------------------------------------
 # --- SAM
