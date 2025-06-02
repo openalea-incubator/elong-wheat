@@ -285,7 +285,7 @@ def calculate_deltaL_postE(prev_leaf_pseudo_age, leaf_pseudo_age, prev_leaf_L, l
         # Beta function
         delta_leaf_L_Beta_0 = min(leaf_Lmax, leaf_Lmax * (Beta_function(leaf_pseudo_age, leaf_rank) - Beta_function(prev_leaf_pseudo_age, leaf_rank)))
 
-        if optimal_growth_option or leaf_rank == 1:
+        if optimal_growth_option:
             # Current leaf length
             delta_leaf_L = delta_leaf_L_Beta_0
         elif conc_sucrose_effective > 0 and amino_acids > 0:

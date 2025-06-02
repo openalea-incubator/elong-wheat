@@ -38,7 +38,9 @@ class Parameters(object):
         self.RERmax_Ljutovac_fit = {2: 2.5e-06, 3: 1.7e-06, 4: 1.7e-06, 5: 1.7e-06, 6: 1.5e-06, 7: 1.5e-06, 8: 1.5e-06, 9: 1.5e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
         # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
         #RERmax = {2: 2.1e-06, 3: 2.5e-06, 4: 2.68e-06, 5: 2.65e-06, 6: 2.65e-06, 7: 2.65e-06, 8: 2.5e-06, 9: 2.3e-06, 10: 2.2e-06, 11: 2.2e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-        self.RERmax = {2: 1.82e-06, 3: 2.21e-06, 4: 2.1e-06, 5: 2.1e-06, 6: 2.15e-06, 7: 2.1e-06, 8: 2.05e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+        # self.RERmax = {2: 2.e-06, 3: 2.33e-06, 4: 2.19e-06, 5: 2.19e-06, 6: 2.25e-06, 7: 2.15e-06, 8: 2.1e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+        self.RERmax = {2: 2.e-06, 3: 2.325e-06, 4: 2.15e-06, 5: 2.15e-06, 6: 2.15e-06, 7: 2.1e-06, 8: 1.95e-06, 9: 1.8e-06, 10: 1.7e-06,
+                       11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
         self.RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
         self.RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
