@@ -250,12 +250,12 @@ def Beta_function(leaf_pseudo_age, leaf_rank):
     :rtype: float
     """
     if leaf_rank in (1, 2):
-        te = 230 * 3600 * 24 / 12
-        tm = 155 * 3600 * 24 / 12
-        tb = -65 * 3600 * 24 / 12
-        leaf_L = abs((1 + (max(0, (te - leaf_pseudo_age)) / (te - tm))) * (min(1.0, float(leaf_pseudo_age - tb) / float(te - tb)) ** ((te - tb) / (te - tm))))
+        te = 250 * 3600 * 24 / 12 # 250 * 3600 * 24 / 12
+        tm = 150 * 3600 * 24 / 12 #150 * 3600 * 24 / 12
+        tb = -35 * 3600 * 24 / 12 # -35
+        leaf_L = abs((1 + (max(0., (te - leaf_pseudo_age)) / (te - tm))) * (min(1.0, float(leaf_pseudo_age - tb) / float(te - tb)) ** ((te - tb) / (te - tm))))
     else:
-        leaf_L = abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm))) *
+        leaf_L = abs((1 + (max(0., (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm))) *
                      (min(1.0, float(leaf_pseudo_age - parameters.tb) / float(parameters.te - parameters.tb)) **
                       ((parameters.te - parameters.tb) / (parameters.te - parameters.tm))))
     return leaf_L
@@ -462,7 +462,6 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, optimal_grow
 
         #: Maximal width (m)
         Wmax = lamina_Lmax * W_L_ratio
-    # Wmax = parameters.leaf_Wmax_Marion[leaf_rank]
     return Wmax
 
 
@@ -484,7 +483,6 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
         SSLW = (parameters.leaf_SSLW_a * integral_conc_sucr) / (parameters.leaf_SSLW_b + integral_conc_sucr)
-    # SSLW = parameters.leaf_SSLW_Marion[leaf_rank]
     return max(min(SSLW, SSLW_max), SSLW_min)
 
 
@@ -611,7 +609,7 @@ def calculate_init_internode_elongation(hiddenzone_age, leaf_rank):
     :rtype: (bool, float)
     """
     if leaf_rank in (1,2,3):
-        if hiddenzone_age > 6 * parameters.PLASTOCHRONE:
+        if hiddenzone_age > 5 * parameters.PLASTOCHRONE: #6
             is_growing = True
             internode_L = parameters.internode_L_init
         else:

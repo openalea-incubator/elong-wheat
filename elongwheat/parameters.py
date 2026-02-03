@@ -18,7 +18,7 @@ class Parameters(object):
         # -------------------------------------------------------------------------------------------------------------------
         # --- SAM
         # -------------------------------------------------------------------------------------------------------------------
-        self.PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
+        self.PLASTOCHRONE = 70/12*24*3600#76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
         self.max_nb_leaves = 11   #: Max number of leaves per axis
         self.delta_TT_GA = self.PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
@@ -39,8 +39,9 @@ class Parameters(object):
         # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
         #RERmax = {2: 2.1e-06, 3: 2.5e-06, 4: 2.68e-06, 5: 2.65e-06, 6: 2.65e-06, 7: 2.65e-06, 8: 2.5e-06, 9: 2.3e-06, 10: 2.2e-06, 11: 2.2e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
         # self.RERmax = {2: 2.e-06, 3: 2.33e-06, 4: 2.19e-06, 5: 2.19e-06, 6: 2.25e-06, 7: 2.15e-06, 8: 2.1e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-        self.RERmax = {2: 2.e-06, 3: 2.325e-06, 4: 2.15e-06, 5: 2.15e-06, 6: 2.15e-06, 7: 2.1e-06, 8: 1.95e-06, 9: 1.8e-06, 10: 1.7e-06,
+        self.RERmax = {2: 1.8e-06, 3: 2.45e-06, 4: 2.22e-06, 5: 2.18e-06, 6: 2.17e-06, 7: 2.15e-06, 8: 2.05e-06, 9: 1.9e-06, 10: 1.7e-06,
                        11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+
         self.RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
         self.RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
 
@@ -98,7 +99,7 @@ class Parameters(object):
         # --- Internodes
         # -------------------------------------------------------------------------------------------------------------------
         # Exponential elongation
-        self.RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 1.E-06, 5: 5.E-06, 6: 4.E-06, 7: 4.E-06, 8: 3.E-06, 9: 3.E-06, 10: 2.5E-06, 11: 2.5E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
+        self.RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 1.85E-06, 4: 3.E-08, 5: 3.7E-06, 6: 3.3E-06, 7: 3.E-06, 8: 2.E-06, 9: 2.E-06, 10: 2.5E-06, 11: 2.5E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
         # RERmax_dict_IN = {1: 2.4E-06, 2: 2.4E-06, 3: 2.4E-06, 4: 2.4E-06, 5: 2.6E-06, 6: 2.6E-06, 7: 2.3E-06, 8: 1.9E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
 
         # { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 : 2.48E-06 , 8 : 2.48E-06 , 9 : 2.48E-06 , 10 : 1.9E-06 , 11 : 1.6E-06 }#: s-1 at 12°C

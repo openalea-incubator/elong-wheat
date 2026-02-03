@@ -369,8 +369,8 @@ class Simulation(object):
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
 
                         # Update leaf_Lmax. Subsequently, lamina_Lmax and sheath_Lmax will be updated depending on each element status (growing or mature)
-                        if phytomer_id not in (0, 1):
-                            curr_hiddenzone_outputs['leaf_Lmax'] = model.calculate_update_leaf_Lmax(hiddenzone_inputs['leaf_Lmax_em'], leaf_L, leaf_pseudo_age, phytomer_id)
+                        curr_hiddenzone_outputs['leaf_Lmax'] = model.calculate_update_leaf_Lmax(
+                            hiddenzone_inputs['leaf_Lmax_em'], leaf_L, leaf_pseudo_age, phytomer_id)
 
                         # Ratio (mass) of Division Zone in the hiddenzone
                         curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_Lmax'], leaf_pseudostem_length)
