@@ -35,11 +35,11 @@ class Parameters(object):
         self.conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and internode growth occurs (µmol of C g-1 mstruct) - same for root growth, see growthwheat
 
         # Exponential elongation
-        self.RERmax_Ljutovac_fit = {2: 2.5e-06, 3: 1.7e-06, 4: 1.7e-06, 5: 1.7e-06, 6: 1.5e-06, 7: 1.5e-06, 8: 1.5e-06, 9: 1.5e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
+        self.RERmax_Ljutovac_fit = {2: 2.55e-06, 3: 1.85e-06, 4: 1.7e-06, 5: 1.6e-06, 6: 1.5e-06, 7: 1.5e-06, 8: 1.5e-06, 9: 1.5e-06, 10: 1.4e-06, 11: 1.4e-06}  # Optimal RERmax (s-1 at 12°C) calibrated from Ljutovac (2002)
         # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
         #RERmax = {2: 2.1e-06, 3: 2.5e-06, 4: 2.68e-06, 5: 2.65e-06, 6: 2.65e-06, 7: 2.65e-06, 8: 2.5e-06, 9: 2.3e-06, 10: 2.2e-06, 11: 2.2e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
         # self.RERmax = {2: 2.e-06, 3: 2.33e-06, 4: 2.19e-06, 5: 2.19e-06, 6: 2.25e-06, 7: 2.15e-06, 8: 2.1e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-        self.RERmax = {2: 1.8e-06, 3: 2.45e-06, 4: 2.22e-06, 5: 2.18e-06, 6: 2.17e-06, 7: 2.15e-06, 8: 2.05e-06, 9: 1.9e-06, 10: 1.7e-06,
+        self.RERmax = {2: 1.85e-06, 3: 2.58e-06, 4: 2.33e-06, 5: 2.25e-06, 6: 2.2e-06, 7: 2.05e-06, 8: 1.95e-06, 9: 1.75e-06, 10: 1.7e-06,
                        11: 1.7e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
         self.RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
@@ -57,7 +57,7 @@ class Parameters(object):
         self.leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
 
         # Leaf maximal width  TODO doc
-        self.leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0048, 5: 0.00545, 6: 0.00734, 7: 0.0913, 8: 0.0111, 9: 0.0163, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+        self.leaf_Wmax_dict = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0048, 5: 0.00545, 6: 0.00734, 7: 0.00913, 8: 0.0111, 9: 0.0163, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
         self.leaf_Wmax_Marion = {1: 0.0030, 2: 0.0033, 3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
         self.leaf_W_L_MIN = 0.025  #: Minimal leaf width
         self.leaf_W_L_a = -0.02033728

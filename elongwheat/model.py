@@ -453,7 +453,7 @@ def calculate_leaf_Wmax(lamina_Lmax, leaf_rank, integral_conc_sucr, optimal_grow
     :return: Maximal leaf width (m)
     :rtype: float
     """
-    if optimal_growth_option or leaf_rank in (1,2):
+    if optimal_growth_option or leaf_rank in (1, 2):
         Wmax = parameters.leaf_Wmax_dict[leaf_rank]
 
     else:
@@ -479,7 +479,7 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     SSLW_min = parameters.leaf_SSLW_MIN
     SSLW_max = parameters.leaf_SSLW_MAX
 
-    if optimal_growth_option or leaf_rank in (1,2):
+    if optimal_growth_option or leaf_rank in (1, 2):
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
         SSLW = (parameters.leaf_SSLW_a * integral_conc_sucr) / (parameters.leaf_SSLW_b + integral_conc_sucr)
@@ -496,7 +496,7 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     :return: Lineic Structural Sheath Weight (g m-1)
     :rtype: float
     """
-    if optimal_growth_option or leaf_rank in (1,2):
+    if optimal_growth_option or leaf_rank in (1, 2):
         LSSW = parameters.leaf_LSSW_dict[leaf_rank]
     else:
         LSSW_nominal = parameters.leaf_LSSW_nominal_A * leaf_rank + parameters.leaf_LSSW_nominal_B
