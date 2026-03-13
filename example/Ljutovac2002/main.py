@@ -29,7 +29,7 @@ from elongwheat import simulation as elongwheat_simulation, converter as elongwh
 OPTION_SHOW_ADEL = False
 run_from_outputs = False
 delta_t = 3600
-loop_end = 900
+loop_end = 10
 desired_t_step = 0
 
 # setup outup precision
@@ -63,9 +63,9 @@ if run_from_outputs:
     SAM_inputs_desired_t = pd.read_csv(AXIS_OUTPUTS_FILEPATH)
 
     # Convert NaN to None
-    hiddenzones_inputs_desired_t = hiddenzones_inputs_desired_t.where(hiddenzones_inputs_desired_t.notnull(), None).copy(deep=True)
-    element_inputs_desired_t = element_inputs_desired_t.where(element_inputs_desired_t.notnull(), None).copy(deep=True)
-    SAM_inputs_desired_t = SAM_inputs_desired_t.where(SAM_inputs_desired_t.notnull(), None).copy(deep=True)
+    hiddenzones_inputs_desired_t = hiddenzones_inputs_desired_t.replace({np.nan: None}).copy(deep=True)
+    element_inputs_desired_t = element_inputs_desired_t.replace({np.nan: None}).copy(deep=True)
+    SAM_inputs_desired_t = SAM_inputs_desired_t.replace({np.nan: None}).copy(deep=True)
 
     assert 't_step' in hiddenzones_inputs_desired_t.columns
     if np.isnan(desired_t_step) or desired_t_step == 0:
@@ -85,9 +85,9 @@ else:
     axis_inputs_df = pd.read_csv(AXIS_INPUTS_FILEPATH)
 
     # Convert NaN to None
-    hiddenzone_inputs_df = hiddenzone_inputs_df.where(hiddenzone_inputs_df.notnull(), None).copy(deep=True)
-    element_inputs_df = element_inputs_df.where(element_inputs_df.notnull(), None).copy(deep=True)
-    axis_inputs_df = axis_inputs_df.where(axis_inputs_df.notnull(), None).copy(deep=True)
+    hiddenzone_inputs_df = hiddenzone_inputs_df.replace({np.nan: None})
+    element_inputs_df = element_inputs_df.replace({np.nan: None})
+    axis_inputs_df = axis_inputs_df.replace({np.nan: None})
 
     inputs = elongwheat_converter.from_dataframes(hiddenzone_inputs_df, element_inputs_df, axis_inputs_df)
     desired_t_step = 0
@@ -190,4 +190,4 @@ all_axes_outputs_df.to_csv(AXIS_OUTPUTS_FILEPATH, index=False, na_rep='NA', floa
 print("--- %s seconds ---" % (time.time() - start_time))
 
 # --- GRAPHS
-os.system("graphs.py")
+exec(open("graphs.py").read())
